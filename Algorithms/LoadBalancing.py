@@ -3,14 +3,12 @@ class ConsistentHashing:
     def __init__(self, numVirtualNodes=100):
         self.numVirtualNodes = numVirtualNodes
         self.hashRing = {}
-        self.serverLoads = {}
-        self.gameSessions = {} 
 
     def hashKey(self, key):
         return int(hashlib.md5(key.encode()).hexdigest(), 16)
 
     def addServer(self, server):
-        serverId = server.serverId
+        serverId = server.Id
         for i in range(self.numVirtualNodes):
             virtualNodeId = f"{serverId}#{i}"
             hashVal = self.hashKey(virtualNodeId)
@@ -19,7 +17,7 @@ class ConsistentHashing:
         self.serverLoads[serverId] = server.sessions.getAvalableSessions()
 
     def removeServer(self, server):
-        serverId = server.serverId
+        serverId = server.Id
         for i in range(self.numVirtualNodes):
             virtualNodeId = f"{serverId}#{i}"
             del self.hashRing[hashVal]
@@ -69,18 +67,18 @@ class ConsistentHashing:
 
 # temp = LoadBalancer.getServerForPlayer(player1, game1.name)
 # for server in servers:
-#     if temp == server.serverId:
+#     if temp == server.Id:
 #         server.load.add(game1)
 
         
 # temp = LoadBalancer.getServerForPlayer(player3, game2.name)
 # for server in servers:
-#     if temp == server.serverId:
+#     if temp == server.Id:
 #         server.load.add(game2)
         
 # temp = LoadBalancer.getServerForPlayer(player4, game1.name)
 # for server in servers:
-#     if temp == server.serverId:
+#     if temp == server.Id:
 #         server.load.add(game1)
         
         
