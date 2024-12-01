@@ -1,0 +1,15 @@
+syntax = "proto3";
+import "GameServer.proto";
+import "Result.proto";
+service Master {
+   rpc registerServer (req) returns (res);
+}
+
+
+message req {
+   GameServer gameServer = 1;
+}
+
+message res {
+   Result result = 1;
+}

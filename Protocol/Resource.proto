@@ -1,0 +1,7 @@
+syntax = "proto3";
+import "Game.proto";
+
+message Resource {
+    int32 MAX_SESSIONS = 1;
+    repeated Game sessions = 2;
+}

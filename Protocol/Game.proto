@@ -1,0 +1,11 @@
+syntax = "proto3";
+import "Player.proto";
+
+message Game {
+    int32 id = 1;
+    string name = 2;
+    int32 MAX_PLAYERS = 3;
+    repeated Player players = 4;
+}
+
+
