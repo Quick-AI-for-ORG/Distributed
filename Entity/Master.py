@@ -77,5 +77,12 @@ class Master(Server, masterRPC.MasterServicer):
         
         
         
+        def run(self):
+            gRPCServer = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
+            masterRPC.add_MasterServicer_to_server(self, gRPCServer)
+            gRPCServer.add_insecure_port(f"{self.IP}:{self.port}")
+            gRPCServer.start()
+            gRPCServer.wait_for_termination()
+        
 m = Master()
 

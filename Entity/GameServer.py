@@ -15,7 +15,6 @@ import Service.ClientService_pb2_grpc as playerRPC
 from Entity.Server import Server
 from Entity.Result import Result
 from Entity.Player import Player
-from Entity.GameServer import GameServer
 
 """Import Protocol Buffers as __PB"""
 import Buffer.Result_pb2 as ResultPB
@@ -30,7 +29,7 @@ import Buffer.Resource_pb2 as ResourcePB
 """gRPC thread executors are defined as grpc.server(futures.ThreadPoolExecutor(max_workers=#))"""
 """Servers gRPC are bound to an address with add_insecure_port("ip:port)"""
 """Clients define bound server channels as grpc.insecure_channel("ip:port")"""
-class GameServer(Server, gameServerRPC.GameServerServicer):
+class GameServer(Server, gameServerRPC.ServerServicer):
   
     def pbToObject(pb):
         if not pb: return None
