@@ -15,6 +15,7 @@ import Service.ClientService_pb2_grpc as playerRPC
 from Entity.Server import Server
 from Entity.Result import Result
 from Entity.Player import Player
+from Entity.Resource import Resource
 
 """Import Protocol Buffers as __PB"""
 import Buffer.Result_pb2 as ResultPB
@@ -33,11 +34,11 @@ class GameServer(Server, gameServerRPC.ServerServicer):
   
     def pbToObject(pb):
         if not pb: return None
-        resource = pb2.Resource.pbToObject(pb.resource)
+        resource = Resource.pbToObject(pb.resource)
         return GameServer(pb.ip, pb.port, pb.resourceLimit, resource)
     
     def objectToPb(obj):
-        return pb2.GameServer(
+        return GameServerPB.GameServer(
             ip= obj.ip,
             port=obj.port,
             resourceLimit=obj.resourceLimit,
@@ -46,13 +47,14 @@ class GameServer(Server, gameServerRPC.ServerServicer):
     
     def __init__(self, ip="localhost", port=None, resourceLimit=4, resource=None):
         super().__init__(ip, port)
+        self.resourceLimit = resourceLimit
         self.resource = Resource(resourceLimit) if resource is None else resource
-        self.master = grpc.inseucure_channel("localhost:7777")
-        self.masterStub = masterRPC.MasterStub(master)
+        # self.master = grpc.inseucure_channel("localhost:7777")
+        # self.masterStub = masterRPC.MasterStub(master)
         self.clients = {}
         
     def __str__(self):
-        return f"Game Server running at {self.IP}:{self.port} with {self.resource}"
+        return f"Game Server running at {self.ip}:{self.port} with {self.resource}"
     def registerServer(self):
         try:
             result = self.masterStub.registerServer(GameServer.objectToPb(self))

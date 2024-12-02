@@ -9,7 +9,7 @@ class Server:
         return f"{self.name} Server running at {self.IP}:{self.port}"
     
     def __dict__(self):
-        return {"IP": self.IP, "port": self.port}
+        return {"IP": self.ip, "port": self.port}
     
     def getAddress(self):
-        return f"{self.IP}:{self.port}"
+        return f"{self.ip}:{self.port}"

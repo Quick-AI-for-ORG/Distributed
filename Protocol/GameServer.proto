@@ -3,7 +3,7 @@ package distributed;
 import "Resource.proto";
 
 message GameServer {
-    string IP = 1;
+    string ip = 1;
     int32 port = 2;
     int32 resourceLimit =3;
     Resource resource = 4;

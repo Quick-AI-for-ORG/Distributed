@@ -15,8 +15,8 @@ class Result:
             message=obj.message,
         )
         
-    def __init__(self, bool, message):
-        self.isSuccess = bool
+    def __init__(self, isSuccess, message):
+        self.isSuccess = isSuccess
         self.message = message
         
     def __str__(self):

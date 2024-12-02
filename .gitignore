@@ -1,0 +1,14 @@
+**/__pycache__/**    
+*/__pycache__/*  
+*.__pycache__/*
+*.pyc
+
+
+Algorithm/__pycache__
+Algorithm/__pycache__/*.pyc
+Buffer/__pycache__
+Buffer/__pycache__/*.pyc
+Service/__pycache__
+Service/__pycache__/*.pyc
+Entity/__pycache__
+Entity/__pycache__/*.pyc
