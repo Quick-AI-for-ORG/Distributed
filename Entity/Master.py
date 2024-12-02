@@ -14,7 +14,7 @@ import Entity.Result
 import grpc
 import Service.MasterService_pb2_grpc as rpc
 
-class Master(Server, rpc.Master, rpc.MasterServicer):
+class Master(Server, rpc.MasterServicer):
     def __init__(self, ip="localhost", port=7777, registeredServers=None):
         super().__init__(ip, port)
         self.loadBalancer = ConsistentHashing()
@@ -42,6 +42,7 @@ class Master(Server, rpc.Master, rpc.MasterServicer):
                 self.loadBalancer.addServer(server.getAddress())
                 message = f"Server {server.getAddress()} registered successfully"
             else:
+                self.registeredServers[server] = True 
                 message = f"Server {server.getAddress()} already registered"
             
             return Result(
