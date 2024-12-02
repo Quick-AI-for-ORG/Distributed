@@ -1,8 +1,21 @@
 syntax = "proto3";
 package distributed;
 
+import "Game.proto";
+import "Player.proto";
+import "GameServer.proto";
+
 message Result {
     bool isSuccess = 1;
     string message = 2;
 }
 
+message Register {
+    Player player = 1;
+    int32 game = 2;
+}
+
+message Response {
+    Result result = 1;
+    GameServer gameServer = 2;
+}

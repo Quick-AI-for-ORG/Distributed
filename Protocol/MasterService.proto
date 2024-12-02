@@ -3,11 +3,10 @@ package distributed;
 
 import "GameServer.proto";
 import "Result.proto";
-import "Player.proto";
 
 service Master {
       rpc registerServer (GameServer) returns (Result);
-      rpc requestServer (Player) returns (GameServer);
+      rpc requestServer (Register) returns (Response);
 }
 
 

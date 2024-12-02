@@ -3,12 +3,12 @@
 import grpc
 import warnings
 
+
 import os
 import sys
 sys.path.append(os.path.dirname("Buffer"))
 
 import Buffer.GameServer_pb2 as GameServer__pb2
-import Buffer.Player_pb2 as Player__pb2
 import Buffer.Result_pb2 as Result__pb2
 
 GRPC_GENERATED_VERSION = '1.68.0'
@@ -47,11 +47,9 @@ class MasterStub(object):
                 _registered_method=True)
         self.requestServer = channel.unary_unary(
                 '/distributed.Master/requestServer',
-                request_serializer=Player__pb2.Player.SerializeToString,
-                response_deserializer=GameServer__pb2.GameServer.FromString,
+                request_serializer=Result__pb2.Register.SerializeToString,
+                response_deserializer=Result__pb2.Response.FromString,
                 _registered_method=True)
-
-
 
 def add_MasterServicer_to_server(servicer, server):
     rpc_method_handlers = {
@@ -62,13 +60,12 @@ def add_MasterServicer_to_server(servicer, server):
             ),
             'requestServer': grpc.unary_unary_rpc_method_handler(
                     servicer.requestServer,
-                    request_deserializer=Player__pb2.Player.FromString,
-                    response_serializer=GameServer__pb2.GameServer.SerializeToString,
+                    request_deserializer=Result__pb2.Register.FromString,
+                    response_serializer=Result__pb2.Response.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
             'distributed.Master', rpc_method_handlers)
     server.add_generic_rpc_handlers((generic_handler,))
     server.add_registered_method_handlers('distributed.Master', rpc_method_handlers)
-
 
