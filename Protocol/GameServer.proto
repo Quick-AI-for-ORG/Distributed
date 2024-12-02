@@ -1,4 +1,5 @@
 syntax = "proto3";
+package distributed;
 import "Resource.proto";
 
 message GameServer {
@@ -6,4 +7,8 @@ message GameServer {
     int32 port = 2;
     int32 resourceLimit =3;
     Resource resource = 4;
+}
+
+message Health {
+    bool isAlive = 1;
 }

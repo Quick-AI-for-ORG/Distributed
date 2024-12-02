@@ -1,6 +1,8 @@
 syntax = "proto3";
+package distributed;
 
 message Result {
     bool isSuccess = 1;
     string message = 2;
 }
+

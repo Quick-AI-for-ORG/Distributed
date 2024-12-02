@@ -1,7 +1,7 @@
 import os
 import sys
-sys.path.append(os.path.dirname("Service"))
-import Service.Result_pb2 as pb2
+sys.path.append(os.path.dirname("Buffer"))
+import Buffer.Result_pb2 as pb2
 
 class Result:
     
@@ -15,7 +15,7 @@ class Result:
             message=obj.message,
         )
         
-    def __init__(self, message, bool=True):
+    def __init__(self, bool, message):
         self.isSuccess = bool
         self.message = message
         

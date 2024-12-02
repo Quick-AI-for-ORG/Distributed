@@ -7,8 +7,9 @@ import os
 import sys
 sys.path.append(os.path.dirname("Buffer"))
 
+
 import Buffer.GameServer_pb2 as GameServer__pb2
-import Buffer.Player_pb2 as Player__pb2
+import Buffer.Game_pb2 as Game__pb2
 import Buffer.Result_pb2 as Result__pb2
 
 GRPC_GENERATED_VERSION = '1.68.0'
@@ -24,14 +25,14 @@ except ImportError:
 if _version_not_supported:
     raise RuntimeError(
         f'The grpc package installed is at version {GRPC_VERSION},'
-        + f' but the generated code in MasterService_pb2_grpc.py depends on'
+        + f' but the generated code in ClientService_pb2_grpc.py depends on'
         + f' grpcio>={GRPC_GENERATED_VERSION}.'
         + f' Please upgrade your grpc module to grpcio>={GRPC_GENERATED_VERSION}'
         + f' or downgrade your generated code using grpcio-tools<={GRPC_VERSION}.'
     )
 
 
-class MasterStub(object):
+class ClientStub(object):
     """Missing associated documentation comment in .proto file."""
 
     def __init__(self, channel):
@@ -40,59 +41,59 @@ class MasterStub(object):
         Args:
             channel: A grpc.Channel.
         """
-        self.registerServer = channel.unary_unary(
-                '/distributed.Master/registerServer',
+        self.recieveUpdate = channel.unary_unary(
+                '/distributed.Client/recieveUpdate',
+                request_serializer=Game__pb2.Context.SerializeToString,
+                response_deserializer=Result__pb2.Result.FromString,
+                _registered_method=True)
+        self.changeServer = channel.unary_unary(
+                '/distributed.Client/changeServer',
                 request_serializer=GameServer__pb2.GameServer.SerializeToString,
                 response_deserializer=Result__pb2.Result.FromString,
                 _registered_method=True)
-        self.requestServer = channel.unary_unary(
-                '/distributed.Master/requestServer',
-                request_serializer=Player__pb2.Player.SerializeToString,
-                response_deserializer=GameServer__pb2.GameServer.FromString,
-                _registered_method=True)
 
 
-class MasterServicer(object):
+class ClientServicer(object):
     """Missing associated documentation comment in .proto file."""
 
-    def registerServer(self, request, context):
+    def recieveUpdate(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
-    def requestServer(self, request, context):
+    def changeServer(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
 
-def add_MasterServicer_to_server(servicer, server):
+def add_ClientServicer_to_server(servicer, server):
     rpc_method_handlers = {
-            'registerServer': grpc.unary_unary_rpc_method_handler(
-                    servicer.registerServer,
+            'recieveUpdate': grpc.unary_unary_rpc_method_handler(
+                    servicer.recieveUpdate,
+                    request_deserializer=Game__pb2.Context.FromString,
+                    response_serializer=Result__pb2.Result.SerializeToString,
+            ),
+            'changeServer': grpc.unary_unary_rpc_method_handler(
+                    servicer.changeServer,
                     request_deserializer=GameServer__pb2.GameServer.FromString,
                     response_serializer=Result__pb2.Result.SerializeToString,
             ),
-            'requestServer': grpc.unary_unary_rpc_method_handler(
-                    servicer.requestServer,
-                    request_deserializer=Player__pb2.Player.FromString,
-                    response_serializer=GameServer__pb2.GameServer.SerializeToString,
-            ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
-            'distributed.Master', rpc_method_handlers)
+            'distributed.Client', rpc_method_handlers)
     server.add_generic_rpc_handlers((generic_handler,))
-    server.add_registered_method_handlers('distributed.Master', rpc_method_handlers)
+    server.add_registered_method_handlers('distributed.Client', rpc_method_handlers)
 
 
  # This class is part of an EXPERIMENTAL API.
-class Master(object):
+class Client(object):
     """Missing associated documentation comment in .proto file."""
 
     @staticmethod
-    def registerServer(request,
+    def recieveUpdate(request,
             target,
             options=(),
             channel_credentials=None,
@@ -105,8 +106,8 @@ class Master(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/distributed.Master/registerServer',
-            GameServer__pb2.GameServer.SerializeToString,
+            '/distributed.Client/recieveUpdate',
+            Game__pb2.Context.SerializeToString,
             Result__pb2.Result.FromString,
             options,
             channel_credentials,
@@ -119,7 +120,7 @@ class Master(object):
             _registered_method=True)
 
     @staticmethod
-    def requestServer(request,
+    def changeServer(request,
             target,
             options=(),
             channel_credentials=None,
@@ -132,9 +133,9 @@ class Master(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/distributed.Master/requestServer',
-            Player__pb2.Player.SerializeToString,
-            GameServer__pb2.GameServer.FromString,
+            '/distributed.Client/changeServer',
+            GameServer__pb2.GameServer.SerializeToString,
+            Result__pb2.Result.FromString,
             options,
             channel_credentials,
             insecure,

@@ -1,12 +1,13 @@
 import random
-from Resource import Resource
-from Server import Server
+
 
 import os
 import sys
-sys.path.append(os.path.dirname("Service"))
-import Service.GameServer_pb2 as pb2
-
+sys.path.append(os.path.dirname("Buffer"))
+sys.path.append(os.path.dirname("Entity"))
+import Buffer.GameServer_pb2 as pb2
+from Entity.Resource import Resource
+from Entity.Server import Server
 class GameServer(Server):
     
     def pbToObject(pb):

@@ -2,9 +2,11 @@ import numpy as np
 
 import os
 import sys
-sys.path.append(os.path.dirname("Service"))
-import Service.Resource_pb2 as pb2
-from Game import Game
+sys.path.append(os.path.dirname("Buffer"))
+sys.path.append(os.path.dirname("Entity"))
+
+import Buffer.Resource_pb2 as pb2
+from Entity.Game import Game
 
 class Resource:
     

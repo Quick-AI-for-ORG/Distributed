@@ -1,7 +1,8 @@
 import os
 import sys
-sys.path.append(os.path.dirname("Service"))
-import Service.Player_pb2 as pb2
+sys.path.append(os.path.dirname("Buffer"))
+import Buffer.Player_pb2 as pb2
+
 class Player:
     count = 0
     

@@ -1,4 +1,5 @@
 syntax = "proto3";
+package distributed;
 import "Player.proto";
 
 message Game {
@@ -8,4 +9,9 @@ message Game {
     repeated Player players = 4;
 }
 
+message Context {
+    string change = 1;
+    int32 timestamp = 2;
+    Game game = 3;
+}
 

@@ -3,11 +3,10 @@ import numpy as np
 
 import os
 import sys
-sys.path.append(os.path.dirname("Service"))
+sys.path.append(os.path.dirname("Buffer"))
 sys.path.append(os.path.dirname("Entity"))
 
-import Service.Game_pb2 as pb2
-
+import Buffer.Game_pb2 as pb2
 from Entity.Player import Player
 
 class Game:

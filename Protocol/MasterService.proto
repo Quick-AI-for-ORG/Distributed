@@ -1,15 +1,13 @@
 syntax = "proto3";
+package distributed;
+
 import "GameServer.proto";
 import "Result.proto";
+import "Player.proto";
+
 service Master {
-   rpc registerServer (req) returns (res);
+      rpc registerServer (GameServer) returns (Result);
+      rpc requestServer (Player) returns (GameServer);
 }
 
 
-message req {
-   GameServer gameServer = 1;
-}
-
-message res {
-   Result result = 1;
-}
