@@ -1,15 +1,37 @@
-import random
-
-
+"""Import Folder Paths"""
 import os
 import sys
 sys.path.append(os.path.dirname("Buffer"))
 sys.path.append(os.path.dirname("Entity"))
-import Buffer.GameServer_pb2 as pb2
-from Entity.Resource import Resource
+sys.path.append(os.path.dirname("Service"))
+
+"""Import gRPC library and files as __RPC"""
+import grpc
+import Service.MasterService_pb2_grpc as masterRPC
+import Service.GameService_pb2_grpc as gameServerRPC
+import Service.ClientService_pb2_grpc as playerRPC
+
+"""Import Entity Classes"""
 from Entity.Server import Server
-class GameServer(Server):
-    
+from Entity.Result import Result
+from Entity.Player import Player
+from Entity.GameServer import GameServer
+
+"""Import Protocol Buffers as __PB"""
+import Buffer.Result_pb2 as ResultPB
+import Buffer.Player_pb2 as PlayerPB
+import Buffer.GameServer_pb2 as GameServerPB
+import Buffer.Resource_pb2 as ResourcePB
+
+"""Class Definition and Implementation"""
+"""Servicer inherits from __RPC.__Servicer"""
+"""Servicer methods are defined as def __(self, request, context)"""
+"""Stubs are defined in __RPC. __Stub"""
+"""gRPC thread executors are defined as grpc.server(futures.ThreadPoolExecutor(max_workers=#))"""
+"""Servers gRPC are bound to an address with add_insecure_port("ip:port)"""
+"""Clients define bound server channels as grpc.insecure_channel("ip:port")"""
+class GameServer(Server, gameServerRPC.GameServerServicer):
+  
     def pbToObject(pb):
         if not pb: return None
         resource = pb2.Resource.pbToObject(pb.resource)
@@ -26,6 +48,24 @@ class GameServer(Server):
     def __init__(self, ip="localhost", port=None, resourceLimit=4, resource=None):
         super().__init__(ip, port)
         self.resource = Resource(resourceLimit) if resource is None else resource
+        self.master = grpc.inseucure_channel("localhost:7777")
+        self.masterStub = masterRPC.MasterStub(master)
+        self.clients = {}
         
     def __str__(self):
         return f"Game Server running at {self.IP}:{self.port} with {self.resource}"
+    def registerServer(self):
+        try:
+            result = self.masterStub.registerServer(GameServer.objectToPb(self))
+            print(Result.pbToObject(result))
+        except Exception as e:
+            return Result(
+                isSuccess=False,
+                message=f"Error connecting to Master: {e}",
+            )
+            
+
+
+
+
+# self.clients[context.peer()] = playerRPC.ClientStub(grpc.insecure_channel(context.peer()))

@@ -1,3 +1,4 @@
+"""Import Folder Paths"""
 import os
 import sys
 sys.path.append(os.path.dirname("Buffer"))
@@ -5,16 +6,34 @@ sys.path.append(os.path.dirname("Entity"))
 sys.path.append(os.path.dirname("Service"))
 sys.path.append(os.path.dirname("Algorithm"))
 
-from Entity.Server import Server
-from Entity.GameServer import GameServer
-from Algorithm.LoadBalancing import ConsistentHashing
-from Buffer.Result_pb2 import Result
-import Entity.Result
-
+"""Import gRPC library and files as __RPC"""
 import grpc
-import Service.MasterService_pb2_grpc as rpc
+import Service.MasterService_pb2_grpc as masterRPC
 
-class Master(Server, rpc.MasterServicer):
+"""Import Entity Classes"""
+from Entity.Server import Server
+from Entity.Result import Result
+from Entity.Player import Player
+from Entity.GameServer import GameServer
+
+"""Import Protocol Buffers as __PB"""
+import Buffer.Result_pb2 as ResultPB
+import Buffer.Player_pb2 as PlayerPB
+import Buffer.GameServer_pb2 as GameServerPB
+import Buffer.Resource_pb2 as ResourcePB
+
+"""Import Algorithms"""
+from Algorithm.LoadBalancing import ConsistentHashing
+
+
+"""Class Definition and Implementation"""
+"""Servicer inherits from __RPC.__Servicer"""
+"""Servicer methods are defined as def __(self, request, context)"""
+"""Stubs are defined in __RPC. __Stub"""
+"""gRPC thread executors are defined as grpc.server(futures.ThreadPoolExecutor(max_workers=#))"""
+"""Servers gRPC are bound to an address with add_insecure_port("ip:port)"""
+"""Clients define bound server channels as grpc.insecure_channel("ip:port")"""
+class Master(Server, masterRPC.MasterServicer): 
     def __init__(self, ip="localhost", port=7777, registeredServers=None):
         super().__init__(ip, port)
         self.loadBalancer = ConsistentHashing()
@@ -60,4 +79,3 @@ class Master(Server, rpc.MasterServicer):
         
 m = Master()
 
-print(Entity.Result.Result.pbToObject(m.registerServer(None, None)))
