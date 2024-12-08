@@ -21,6 +21,7 @@ _runtime_version.ValidateProtobufRuntimeVersion(
 
 _sym_db = _symbol_database.Default()
 
+
 import os
 import sys
 sys.path.append(os.path.dirname("Buffer"))
@@ -29,7 +30,7 @@ sys.path.append(os.path.dirname("Buffer"))
 import Buffer.Player_pb2 as Player__pb2
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\nGame.proto\x12\x0b\x64istributed\x1a\x0cPlayer.proto\"[\n\x04Game\x12\n\n\x02id\x18\x01 \x01(\x05\x12\x0c\n\x04name\x18\x02 \x01(\t\x12\x13\n\x0bMAX_PLAYERS\x18\x03 \x01(\x05\x12$\n\x07players\x18\x04 \x03(\x0b\x32\x13.distributed.Player\"M\n\x07\x43ontext\x12\x0e\n\x06\x63hange\x18\x01 \x01(\t\x12\x11\n\ttimestamp\x18\x02 \x01(\x05\x12\x1f\n\x04game\x18\x03 \x01(\x0b\x32\x11.distributed.Gameb\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\nGame.proto\x12\x0b\x64istributed\x1a\x0cPlayer.proto\"[\n\x04Game\x12\n\n\x02id\x18\x01 \x01(\x05\x12\x0c\n\x04name\x18\x02 \x01(\t\x12\x13\n\x0bMAX_PLAYERS\x18\x03 \x01(\x05\x12$\n\x07players\x18\x04 \x03(\x0b\x32\x13.distributed.Player\"M\n\x07\x43ontext\x12\x0e\n\x06\x63hange\x18\x01 \x01(\t\x12\x11\n\ttimestamp\x18\x02 \x01(\t\x12\x1f\n\x04game\x18\x03 \x01(\x0b\x32\x11.distributed.Gameb\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
@@ -41,6 +42,3 @@ if not _descriptor._USE_C_DESCRIPTORS:
   _globals['_CONTEXT']._serialized_start=134
   _globals['_CONTEXT']._serialized_end=211
 # @@protoc_insertion_point(module_scope)
-
-def create(id, name, MAX_PLAYERS, players):
-    return Game(id=id, name=name, MAX_PLAYERS=MAX_PLAYERS, players=players)
