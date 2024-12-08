@@ -28,6 +28,7 @@ import Buffer.Resource_pb2 as ResourcePB
 
 """Import Algorithms"""
 from Algorithm.LoadBalancing import ConsistentHashing
+import Algorithm.IPDecoder as IPDecoder
 
 
 """Class Definition and Implementation"""
@@ -48,6 +49,8 @@ class Master(Server):
 
     async def registerServer(self, request, context):
         try:
+            
+            ip,port = IPDecoder.getIP(context)
             server = GameServer.pbToObject(request)
             if server is None:
                 return ResultPB.create(
@@ -158,17 +161,19 @@ class Master(Server):
         gRPCServer = grpc.aio.server(futures.ThreadPoolExecutor(max_workers=10))
         masterRPC.add_MasterServicer_to_server(self, gRPCServer)
         gRPCServer.add_insecure_port(f"{self.ip}:{self.port}")
+        
         try:
             await gRPCServer.start()
             print(str(self))
             await gRPCServer.wait_for_termination() 
             
+        except asyncio.CancelledError:
+            print(f"Master Server {self.getAddress()} Stopped")
         except KeyboardInterrupt:
-            await gRPCServer.stop(0)
-            await gRPCServer.shutdown()
-            print("Master Server Stopped")
-        
-        
+            print(f"Master Server {self.getAddress()} Stopped")
+        finally:
+            await gRPCServer.stop(grace=None)
+            
     async def main(self):
         await self.runServicer()
 
