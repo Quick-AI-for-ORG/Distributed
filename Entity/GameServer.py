@@ -164,7 +164,7 @@ class GameServer(Server):
                 message= f"Error checking server {self.getAddress()} health: {e}"
             )
                 
-
+ 
     async def sendUpdate(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)

@@ -18,9 +18,6 @@ import Service.ClientService_pb2_grpc as playerRPC
 
 """Import Entity Classes"""
 from Entity.Result import Result
-from Entity.Player import Player
-from Entity.GameServer import GameServer
-from Entity.Game import Game
 
 """Import Protocol Buffers as __PB"""
 import Buffer.Result_pb2 as ResultPB
@@ -58,7 +55,7 @@ class Player:
 
     async def connectPlayer(self):
         if self.gameServer:
-            async with grpc.aio.insecure_channel(self.gameServer.getAddress()) as channel:
+            async with grpc.aio.insecure_channel(self.gameServer) as channel:
                 self.gameServerStub = gameServerRPC.ServerStub(channel)
                 try:
                     result = await self.gameServerStub.connectPlayer(Player.objectToPb(self))
@@ -66,7 +63,7 @@ class Player:
                 except Exception as e:
                     print(Result(
                         isSuccess=False,
-                        message=f"Error connecting to Game Server {self.gameServer.getAddress()}: {e}",
+                        message=f"Error connecting to Game Server {self.gameServer}: {e}",
                     ))
         else: print(Result(
                         isSuccess=False,
@@ -75,7 +72,7 @@ class Player:
 
     async def disconnectPlayer(self):
         if self.gameServer:
-             async with grpc.aio.insecure_channel(self.gameServer.getAddress()) as channel:
+             async with grpc.aio.insecure_channel(self.gameServer) as channel:
                 self.gameServerStub = gameServerRPC.ServerStub(channel)
                 try:
                     result = await self.gameServerStub.disconnectPlayer(Player.objectToPb(self))
@@ -83,7 +80,7 @@ class Player:
                 except Exception as e:
                     print(Result(
                         isSuccess=False,
-                        message=f"Error connecting to Game Server {self.gameServer.getAddress()}: {e}",
+                        message=f"Error connecting to Game Server {self.gameServer}: {e}",
                     ))
         else: print(Result(
                         isSuccess=False,
@@ -107,7 +104,7 @@ class Player:
                         )
                     )
                 print(Result.pbToObject(result.result))
-                try: self.gameServer = GameServer.pbToObject(result.gameServer)
+                try: self.gameServer = f"{result.gameServer.ip}:{result.gameServer.port}"
                 except Exception as e:
                     print(Result(
                         isSuccess=False,

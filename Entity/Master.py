@@ -154,7 +154,32 @@ class Master(Server):
                         ),
                     )
     
-    
+    async def checkHealth(self):
+        while True:
+            await asyncio.sleep(10)
+            for server,health in list(self.registeredServers.values()):
+                async with grpc.aio.insecure_channel(self.getAddress()) as channel:
+                    gameServerStub = gameServerRPC.ServerStub(channel)
+                    try:
+                        result = await gameServerStub.checkHealth(
+                            GameServerPB.Health(isAlive=True)
+                            )
+                        print(Result.pbToObject(result))
+                        
+                        if not Result.pbToObject(result).isSuccess:
+                            self.registeredServers[server.getAddress()] = (server, False)
+                            self.loadBalancer.removeServer(server.getAddress())
+                            print(f"Server {server.getAddress()} is not healthy")
+                        else:
+                            self.registeredServers[server.getAddress()] = (server, True)
+                            print(f"Server {server.getAddress()} is healthy")
+                            
+                    except Exception as e:
+                        print( Result(
+                            isSuccess=False,
+                            message=f"Error Conducting Heartbeat Health Checks: {e}",
+                        ))
+                        
     def addSessionToServer(self, server):
         for game in server.resource.sessions:
             if game.id not in self.activeSessions.keys():
@@ -178,5 +203,8 @@ class Master(Server):
             await gRPCServer.stop(grace=None)
             
     async def main(self):
-        await self.runServicer()
+        await asyncio.gather(
+            self.runServicer(),
+            self.checkHealth(),
+        )
 
