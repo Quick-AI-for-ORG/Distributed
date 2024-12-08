@@ -175,7 +175,7 @@ class GameServer(Server):
 
             print(f"Update received: {change} at {timestamp}")
             print(f"Game Details: {game_details}")
-
+                #    Validate Game Logic
             for player_id, player_stub in self.clients.items():
                 try:
                     await player_stub.receiveUpdate(request)
