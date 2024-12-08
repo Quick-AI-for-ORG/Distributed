@@ -67,6 +67,36 @@ class GameServer(Server, gameServerRPC.ServerServicer):
             
 
 
+    def disconnectPlayer(self, request, context):
+        try:
+            player = player.pbToObject(request)
+            if player is None:
+                return ResultPB.create(
+                    isSuccess = False,
+                    message = "Invalid Player Details",
+                )
+        except Exception as e:
+            return ResultPB.create(
+                isSuccess = False,
+                message=f"Error reading player details from {context.peer()}: {e}",
+            )
+        try:
+            if player.id in self.clients:
+                del self.connectedPlayers[player.id] 
+                message = f"Player {player.name} disconnected successfully"
+            else:
+                message = f"Player {player.name} not found in active players"
+            
+            return ResultPB.create(
+                isSuccess = True,
+                message = message,
+            )
+        except Exception as e:
+            return ResultPB.create(
+                isSuccess = False,
+                message= f"Error disconnecting player {player.name}: {e}",
+            )
+
 
 
 # self.clients[context.peer()] = playerRPC.ClientStub(grpc.insecure_channel(context.peer()))
