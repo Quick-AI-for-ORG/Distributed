@@ -1,12 +1,18 @@
-"""Import Folder Paths"""
+"""Import libraries"""
 import os
 import sys
+import grpc
+import asyncio
+import tracemalloc
+import concurrent.futures as futures
+
+"""Import Folder Paths"""
 sys.path.append(os.path.dirname("Buffer"))
 sys.path.append(os.path.dirname("Entity"))
 sys.path.append(os.path.dirname("Service"))
+sys.path.append(os.path.dirname("Algorithm"))
 
-"""Import gRPC library and files as __RPC"""
-import grpc
+"""Import gRPC files as __RPC"""
 import Service.MasterService_pb2_grpc as masterRPC
 import Service.GameService_pb2_grpc as gameServerRPC
 import Service.ClientService_pb2_grpc as playerRPC
@@ -30,8 +36,7 @@ import Buffer.Resource_pb2 as ResourcePB
 """gRPC thread executors are defined as grpc.server(futures.ThreadPoolExecutor(max_workers=#))"""
 """Servers gRPC are bound to an address with add_insecure_port("ip:port)"""
 """Clients define bound server channels as grpc.insecure_channel("ip:port")"""
-class GameServer(Server, gameServerRPC.ServerServicer):
-  
+class GameServer(Server): 
     def pbToObject(pb):
         if not pb: return None
         resource = Resource.pbToObject(pb.resource)
@@ -45,27 +50,29 @@ class GameServer(Server, gameServerRPC.ServerServicer):
             resource=Resource.objectToPb(obj.resource),
         )
     
-    def __init__(self, ip="localhost", port=None, resourceLimit=4, resource=None):
+    def __init__(self, ip="localhost", port=None, resourceLimit=4, resource=None, master=None):
         super().__init__(ip, port)
         self.resourceLimit = resourceLimit
         self.resource = Resource(resourceLimit) if resource is None else resource
-        # self.master = grpc.inseucure_channel("localhost:7777")
-        # self.masterStub = masterRPC.MasterStub(master)
+        self.master = "localhost:7777" if master is None else master
         self.clients = {}
         
     def __str__(self):
         return f"Game Server running at {self.ip}:{self.port} with {self.resource}"
-    def registerServer(self):
-        try:
-            result = self.masterStub.registerServer(GameServer.objectToPb(self))
-            print(Result.pbToObject(result))
-        except Exception as e:
-            return Result(
-                isSuccess=False,
-                message=f"Error connecting to Master: {e}",
-            )
+    
+    async def registerServer(self):
+        async with grpc.aio.insecure_channel(self.master) as channel:
+            self.masterStub = masterRPC.MasterStub(channel)
+            try:
+                result = await self.masterStub.registerServer(GameServer.objectToPb(self))
+                print(Result.pbToObject(result))
+            except Exception as e:
+                print( Result(
+                    isSuccess=False,
+                    message=f"Error connecting to Master: {e}",
+                ))
             
-    def connectPlayer(self, request, context):
+    async def connectPlayer(self, request, context):
         try:
             player = Player.pbToObject(request)
             if player is None:
@@ -94,10 +101,7 @@ class GameServer(Server, gameServerRPC.ServerServicer):
                     isSuccess=False,
                     message=f"Error registering player {player.name}: {e}",
                 )
-    def test(self):
-        stub = playerRPC.ClientStub(grpc.insecure_channel("localhost:9090"))
-        player = Player(1,'ded',2,12)
-    def disconnectPlayer(self, request, context):
+    async def disconnectPlayer(self, request, context):
         try:
             player = player.pbToObject(request)
             if player is None:
@@ -129,5 +133,37 @@ class GameServer(Server, gameServerRPC.ServerServicer):
 
 
 
+    async def runServicer(self):
+        gRPCServer = grpc.aio.server(futures.ThreadPoolExecutor(max_workers=10))
+        gameServerRPC.add_ServerServicer_to_server(self, gRPCServer)
+        gRPCServer.add_insecure_port(f"{self.ip}:{self.port}")
+        
+        try:
+            await gRPCServer.start()
+            print(str(self))
+            await gRPCServer.wait_for_termination() 
+            
+        except KeyboardInterrupt:
+            await gRPCServer.stop(0)
+            await gRPCServer.shutdown()
+            print(f"Game Server {self.getAddress()} Stopped")
+        
+        
+    
+    async def checkHealth(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
 
-# self.clients[context.peer()] = playerRPC.ClientStub(grpc.insecure_channel(context.peer()))
+    async def sendUpdate(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+    
+    async def listen(self):
+        await asyncio.gather(self.runServicer(), self.registerServer())
+
+
+

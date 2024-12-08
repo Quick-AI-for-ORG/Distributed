@@ -2,6 +2,9 @@
 import os
 import sys
 import grpc
+import asyncio
+import tracemalloc
+tracemalloc.start()
 import concurrent.futures as futures
 
 """Import Folder Paths"""
@@ -42,11 +45,10 @@ class Master(Server):
         self.loadBalancer = ConsistentHashing()
         self.registeredServers = {} if registeredServers is None else registeredServers
         self.activeSessions = {} if activeSessions is None else activeSessions
-        
     def __str__(self):
         return f"Master Server running at {self.ip}:{self.port}"
 
-    def registerServer(self, request, context):
+    async def registerServer(self, request, context):
         try:
             server = GameServer.pbToObject(request)
             if server is None:
@@ -80,7 +82,7 @@ class Master(Server):
                 message=f"Error registering server {server.getAddress()}: {e}",
             )
         
-    def requestServer(self, request, context):
+    async def requestServer(self, request, context):
         try:
             player = Player.pbToObject(request.player)
             if player is None:
@@ -135,7 +137,7 @@ class Master(Server):
             return ResultPB.Response(
                 result = ResultPB.create(
                     isSuccess=True,
-                    message=f"Server {server.getAddress()} found for player {request.player}",
+                    message=f"Server {server.getAddress()} found for player {str(player)}",
                 ),
                 gameServer = GameServer.objectToPb(server),
             )
@@ -144,7 +146,7 @@ class Master(Server):
             return ResultPB.Response(
                         result = ResultPB.create(
                             isSuccess=False,
-                            message=f"Error requesting server for {player} from {context.peer()}"
+                            message=f"Error requesting server for {request.player} from {context.peer()}"
                         ),
                     )
     
@@ -154,36 +156,21 @@ class Master(Server):
             if game.id not in self.activeSessions.keys():
                 self.activeSessions[game.id] = server.getAddress()
 
-    def runServicer(self):
-        gRPCServer = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
+    async def runServicer(self):
+        gRPCServer = grpc.aio.server(futures.ThreadPoolExecutor(max_workers=10))
         masterRPC.add_MasterServicer_to_server(self, gRPCServer)
         gRPCServer.add_insecure_port(f"{self.ip}:{self.port}")
-        gRPCServer.start()
-        print(str(self))
-        try: 
-            
-            self.test1()
-            self.test2()
-            
-        except KeyboardInterrupt: print(f"Master Server {self.getAddress()} stopped.")
-        
-    def test1(self):
-        stub = masterRPC.MasterStub(grpc.insecure_channel("localhost:7777"))
-        server = GameServer(ip="localhost", port=7778)
         try:
-            result = stub.registerServer(GameServer.objectToPb(server))
-            print(Result.pbToObject(result))
-        except Exception as e: print(f"Error connecting to Master: {e}")
-        
-    def test2(self):
-        stub = masterRPC.MasterStub(grpc.insecure_channel("localhost:7777"))
-        player = Player(name="Adam")
-        try:
-            result = stub.requestServer(Player.objectToPb(player), None)
-            print(Result.pbToObject(result.result))
-        except Exception as e: print(f"Error connecting to Master: {e}")
+            await gRPCServer.start()
+            print(str(self))
+            await gRPCServer.wait_for_termination() 
+            
+        except KeyboardInterrupt:
+            await gRPCServer.stop(0)
+            await gRPCServer.shutdown()
+            print("Master Server Stopped")
         
         
-m = Master()
+    async def main(self):
+        await self.runServicer()
 
-m.runServicer()
