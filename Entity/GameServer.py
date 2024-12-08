@@ -65,8 +65,37 @@ class GameServer(Server, gameServerRPC.ServerServicer):
                 message=f"Error connecting to Master: {e}",
             )
             
-
-
-
+    def connectPlayer(self, request, context):
+        try:
+            player = Player.pbToObject(request)
+            if player is None:
+                return Result(
+                    isSuccess=False,
+                    message="invalid data",
+                )
+        except Exception as e:
+            return ResultPB.create(
+                isSuccess=False,
+                message=f"Error reading {context}: {e}",
+            )
+        try:
+                if player not in self.clients:
+                    self.clients[player]=player
+                    message = f"Player {player.name} registered successfully"
+                else:
+                    message = f"Player {player.name} already registered"
+                return ResultPB.create(
+                    isSuccess=True,
+                    message=message,
+                )
+                
+        except Exception as e:
+                return ResultPB.create(
+                    isSuccess=False,
+                    message=f"Error registering player {player.name}: {e}",
+                )
+    def test(self):
+        stub = playerRPC.ClientStub(grpc.insecure_channel("localhost:9090"))
+        player = Player(1,'ded',2,12)
 
 # self.clients[context.peer()] = playerRPC.ClientStub(grpc.insecure_channel(context.peer()))
