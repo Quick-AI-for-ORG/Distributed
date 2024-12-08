@@ -167,13 +167,29 @@ class GameServer(Server):
                 
 
     async def sendUpdate(self, request, context):
-        """Missing associated documentation comment in .proto file."""
-        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details('Method not implemented!')
-        raise NotImplementedError('Method not implemented!')
-    
-    async def listen(self):
-        await asyncio.gather(self.runServicer(), self.registerServer())
 
+        try:
+            change = request.change
+            timestamp = request.timestamp
+            game_details = request.game
 
+            print(f"Update received: {change} at {timestamp}")
+            print(f"Game Details: {game_details}")
 
+            for player_id, player_stub in self.clients.items():
+                try:
+                    await player_stub.receiveUpdate(request)
+                    print(f"Update sent to player {player_id}")
+                except Exception as e:
+                    print(f"Failed to send update to player {player_id}: {e}")
+
+            return ResultPB.create(
+                isSuccess=True,
+                message="Update sent to all players successfully."
+            )
+
+        except Exception as e:
+            return ResultPB.Result(
+                isSuccess=False,
+                message=f"Failed to send update: {e}"
+            )
