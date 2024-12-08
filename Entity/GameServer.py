@@ -130,7 +130,6 @@ class GameServer(Server):
                 isSuccess = False,
                 message= f"Error disconnecting player {player.name}: {e}",
             )
-    def checkHealth(self, request, context):
         
 
 

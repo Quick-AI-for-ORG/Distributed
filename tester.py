@@ -1,6 +1,8 @@
 import os
 import sys
 import asyncio
+import tracemalloc
+tracemalloc.start()
 sys.path.append(os.path.dirname("Entity"))
 
 from Entity.Master import Master

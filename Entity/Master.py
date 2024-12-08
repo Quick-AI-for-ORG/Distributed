@@ -3,8 +3,6 @@ import os
 import sys
 import grpc
 import asyncio
-import tracemalloc
-tracemalloc.start()
 import concurrent.futures as futures
 
 """Import Folder Paths"""
