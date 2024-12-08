@@ -126,6 +126,8 @@ class GameServer(Server, gameServerRPC.ServerServicer):
                 isSuccess = False,
                 message= f"Error disconnecting player {player.name}: {e}",
             )
+    def checkHealth(self, request, context):
+        
 
 
 
