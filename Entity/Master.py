@@ -37,17 +37,18 @@ from Algorithm.LoadBalancing import ConsistentHashing
 """Servers gRPC are bound to an address with add_insecure_port("ip:port)"""
 """Clients define bound server channels as grpc.insecure_channel("ip:port")"""
 class Master(Server): 
-    def __init__(self, ip="localhost", port=7777, registeredServers=None):
+    def __init__(self, ip="localhost", port=7777, registeredServers=None, activeSessions=None):
         super().__init__(ip, port)
         self.loadBalancer = ConsistentHashing()
         self.registeredServers = {} if registeredServers is None else registeredServers
+        self.activeSessions = {} if activeSessions is None else activeSessions
         
     def __str__(self):
         return f"Master Server running at {self.ip}:{self.port}"
 
     def registerServer(self, request, context):
         try:
-            server = GameServer.pbToObject(request.GameServer)
+            server = GameServer.pbToObject(request)
             if server is None:
                 return ResultPB.create(
                     isSuccess=False,
@@ -59,12 +60,13 @@ class Master(Server):
                 message=f"Error reading {context.peer()}: {e}",
             )
         try:
-            if server.getAddress() not in [server.getAddress() for server in self.registeredServers.keys()]:
-                self.registeredServers[server] = True
+            if server.getAddress() not in list(self.registeredServers.keys()):
+                self.registeredServers[server.getAddress()] = (server, True)
                 self.loadBalancer.addServer(server.getAddress())
                 message = f"Server {server.getAddress()} registered successfully"
             else:
-                self.registeredServers[server] = True 
+                self.registeredServers[server.getAddress()] = (server, True)
+                self.addSessionToServer(server)
                 message = f"Server {server.getAddress()} already registered"
             
             return ResultPB.create(
@@ -79,8 +81,79 @@ class Master(Server):
             )
         
     def requestServer(self, request, context):
-        print("")
-        
+        try:
+            player = Player.pbToObject(request.player)
+            if player is None:
+                return ResultPB.Response(
+                    result = ResultPB.create(
+                        isSuccess=True,
+                        message=f"Server {server.getAddress()} found for game {request.game.id}",
+                    ),
+                )
+        except Exception as e:
+            return ResultPB.Response(
+                result = ResultPB.create(
+                    isSuccess=False,
+                    message=f"Error reading {context.peer()}: {e}",
+                ),
+            )
+        try:
+            if request.game :
+                if request.game in list(self.activeSessions.keys()):
+                    address = self.activeSessions[request.game]
+                    server = self.registeredServers[address][0]
+                    return ResultPB.Response(
+                        result = ResultPB.create(
+                            isSuccess=True,
+                            message=f"Server {server.getAddress()} found for game {request.game}",
+                        ),
+                        gameServer = GameServer.objectToPb(server),
+                    )
+                else:
+                    return ResultPB.Response(
+                        result = ResultPB.create(
+                            isSuccess=False,
+                            message=f"Game {request.game} not found",
+                        ),
+                    )
+        except Exception as e:
+            return ResultPB.Response(
+                result = ResultPB.create(
+                    isSuccess=False,
+                    message=f"Error requesting server for {request.game} from {context.peer()}"
+                ),
+            )
+              
+        try:     
+            candidateServers = self.loadBalancer.getServersForPlayer(player.id)
+            found = {}
+            for server in candidateServers:
+                if self.registeredServers[server][1]:
+                    found[self.registeredServers[server][0]] = self.registeredServers[server][0].resource.getAvalableSessions()
+                    
+            server = max(found, key=found.get)
+            return ResultPB.Response(
+                result = ResultPB.create(
+                    isSuccess=True,
+                    message=f"Server {server.getAddress()} found for player {request.player}",
+                ),
+                gameServer = GameServer.objectToPb(server),
+            )
+
+        except Exception as e: 
+            return ResultPB.Response(
+                        result = ResultPB.create(
+                            isSuccess=False,
+                            message=f"Error requesting server for {player} from {context.peer()}"
+                        ),
+                    )
+    
+    
+    def addSessionToServer(self, server):
+        for game in server.resource.sessions:
+            if game.id not in self.activeSessions.keys():
+                self.activeSessions[game.id] = server.getAddress()
+
     def runServicer(self):
         gRPCServer = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
         masterRPC.add_MasterServicer_to_server(self, gRPCServer)
@@ -89,15 +162,25 @@ class Master(Server):
         print(str(self))
         try: 
             
-            self.test()
+            self.test1()
+            self.test2()
+            
         except KeyboardInterrupt: print(f"Master Server {self.getAddress()} stopped.")
         
-    def test(self):
+    def test1(self):
         stub = masterRPC.MasterStub(grpc.insecure_channel("localhost:7777"))
         server = GameServer(ip="localhost", port=7778)
         try:
             result = stub.registerServer(GameServer.objectToPb(server))
             print(Result.pbToObject(result))
+        except Exception as e: print(f"Error connecting to Master: {e}")
+        
+    def test2(self):
+        stub = masterRPC.MasterStub(grpc.insecure_channel("localhost:7777"))
+        player = Player(name="Adam")
+        try:
+            result = stub.requestServer(Player.objectToPb(player), None)
+            print(Result.pbToObject(result.result))
         except Exception as e: print(f"Error connecting to Master: {e}")
         
         

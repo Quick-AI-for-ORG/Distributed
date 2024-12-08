@@ -20,27 +20,18 @@ class ConsistentHashing:
             hashVal = self.hashKey(virtualNodeId)
             del self.hashRing[hashVal]
 
-    def getServerForPlayer(self, playerId, gameId=None):
-        if gameId and gameId in self.gameSessions:
-            return self.gameSessions[gameId]
-
-        hashVal = self.hashKey(playerId)
+    def getServersForPlayer(self, playerId):
+        hashVal = self.hashKey(str(playerId))
         sortedHashes = sorted(self.hashRing.keys())
-
         candidateServers = []
         for h in sortedHashes:
             if hashVal <= h:
                 candidateServers.append(self.hashRing[h])
+
+        # If no candidate found (wrap-around case), return the first server
         if not candidateServers:
             candidateServers.append(self.hashRing[sortedHashes[0]])
-
-        leastLoadedServer = max(candidateServers, key=lambda serverId: self.serverLoads[serverId])
-
-        if gameId:
-            self.gameSessions[gameId] = leastLoadedServer
-
-        return leastLoadedServer
-    
+        return candidateServers
     def __str__(self):
         return f"Consistent Hashing Load Balancer with {self.numVirtualNodes} virtual nodes"
 
