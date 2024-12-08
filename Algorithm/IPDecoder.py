@@ -9,6 +9,6 @@ def getIP(context):
         ip = decoded_peer.split(':')[1]
     else:
         ip = 'unknown'
-    port = decoded_peer.split(']')[1].split(':')[1]
+    port = decoded_peer.split(':')[-1]
     print(f"ip: {ip} port: {port}")
     return ip, port
