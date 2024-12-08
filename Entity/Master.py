@@ -13,6 +13,7 @@ sys.path.append(os.path.dirname("Algorithm"))
 
 """Import gRPC files as __RPC"""
 import Service.MasterService_pb2_grpc as masterRPC
+import Service.GameService_pb2_grpc as gameServerRPC
 
 """Import Entity Classes"""
 from Entity.Server import Server
@@ -48,6 +49,8 @@ class Master(Server):
         return f"Master Server running at {self.ip}:{self.port}"
 
     async def registerServer(self, request, context):
+        async with grpc.aio.insecure_channel(self.getAddress) as channel:
+            self.gameStub = gameServerRPC.ServerStub(channel)
         try:
             
             ip,port = IPDecoder.getIP(context)
