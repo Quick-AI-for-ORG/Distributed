@@ -153,26 +153,20 @@ class GameServer(Server):
     
     async def checkHealth(self, request, context):
         try:
-            message=f"Server {self.getAddress()} is healthy"
-            return ResultPB.create(
-                isSuccess = True,
-                message= message
-            )
+                    message=f"Server {self.ip} is healthy"
+                    print(message)
+                    return ResultPB.create(
+                        isSuccess = True,
+                        message= message
+                    )
         except Exception as e:
             return ResultPB.create(
                 isSuccess = False,
-                message= f"Error checking server {self.getAddress()} health: {e}"
+                message= f"Error checking server {self.ip} health: {e}"
             )
                 
 
     async def sendUpdate(self, request, context):
-        """Missing associated documentation comment in .proto file."""
-        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details('Method not implemented!')
-        raise NotImplementedError('Method not implemented!')
-    
-    async def listen(self):
-        await asyncio.gather(self.runServicer(), self.registerServer(), self.checkHealth())
 
         try:
             change = request.change
