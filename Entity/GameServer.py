@@ -153,16 +153,15 @@ class GameServer(Server):
     
     async def checkHealth(self, request, context):
         try:
-                    message=f"Server {self.ip} is healthy"
-                    print(message)
-                    return ResultPB.create(
-                        isSuccess = True,
-                        message= message
-                    )
+            message=f"Server {self.getAddress()} is healthy"
+            return ResultPB.create(
+                isSuccess = True,
+                message= message
+            )
         except Exception as e:
             return ResultPB.create(
                 isSuccess = False,
-                message= f"Error checking server {self.ip} health: {e}"
+                message= f"Error checking server {self.getAddress()} health: {e}"
             )
                 
 
@@ -173,7 +172,7 @@ class GameServer(Server):
         raise NotImplementedError('Method not implemented!')
     
     async def listen(self):
-        await asyncio.gather(self.runServicer(), self.registerServer())
+        await asyncio.gather(self.runServicer(), self.registerServer(), self.checkHealth())
 
 
 
