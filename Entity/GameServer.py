@@ -193,3 +193,9 @@ class GameServer(Server):
                 isSuccess=False,
                 message=f"Failed to send update: {e}"
             )
+        
+    async def listen(self):
+       await asyncio.gather(
+            self.runServicer(),
+            self.registerServer(),)
+
