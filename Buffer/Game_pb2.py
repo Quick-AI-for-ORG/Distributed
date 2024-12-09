@@ -30,15 +30,26 @@ sys.path.append(os.path.dirname("Buffer"))
 import Buffer.Player_pb2 as Player__pb2
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\nGame.proto\x12\x0b\x64istributed\x1a\x0cPlayer.proto\"[\n\x04Game\x12\n\n\x02id\x18\x01 \x01(\x05\x12\x0c\n\x04name\x18\x02 \x01(\t\x12\x13\n\x0bMAX_PLAYERS\x18\x03 \x01(\x05\x12$\n\x07players\x18\x04 \x03(\x0b\x32\x13.distributed.Player\"M\n\x07\x43ontext\x12\x0e\n\x06\x63hange\x18\x01 \x01(\t\x12\x11\n\ttimestamp\x18\x02 \x01(\t\x12\x1f\n\x04game\x18\x03 \x01(\x0b\x32\x11.distributed.Gameb\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\nGame.proto\x12\x0b\x64istributed\x1a\x0cPlayer.proto\"\xcb\x01\n\x04Game\x12\n\n\x02id\x18\x01 \x01(\x05\x12\x0c\n\x04name\x18\x02 \x01(\t\x12\x13\n\x0bMAX_PLAYERS\x18\x03 \x01(\x05\x12$\n\x07players\x18\x04 \x03(\x0b\x32\x13.distributed.Player\x12\x0e\n\x06rounds\x18\x05 \x01(\x05\x12 \n\x05teams\x18\x06 \x03(\x0b\x32\x11.distributed.Team\x12&\n\x08settings\x18\x07 \x01(\x0b\x32\x14.distributed.Setting\x12\x14\n\x0cplayersInput\x18\x08 \x03(\t\"&\n\x07\x43ontext\x12\r\n\x05guess\x18\x01 \x01(\t\x12\x0c\n\x04\x63lue\x18\x02 \x01(\t\"*\n\x07Setting\x12\x10\n\x08\x64uration\x18\x01 \x01(\t\x12\r\n\x05packs\x18\x02 \x03(\t\"(\n\x04Team\x12\x0f\n\x07player1\x18\x01 \x01(\x05\x12\x0f\n\x07player2\x18\x02 \x01(\x05\x62\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
 _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'Game_pb2', _globals)
 if not _descriptor._USE_C_DESCRIPTORS:
   DESCRIPTOR._loaded_options = None
-  _globals['_GAME']._serialized_start=41
-  _globals['_GAME']._serialized_end=132
-  _globals['_CONTEXT']._serialized_start=134
-  _globals['_CONTEXT']._serialized_end=211
+  _globals['_GAME']._serialized_start=42
+  _globals['_GAME']._serialized_end=245
+  _globals['_CONTEXT']._serialized_start=247
+  _globals['_CONTEXT']._serialized_end=285
+  _globals['_SETTING']._serialized_start=287
+  _globals['_SETTING']._serialized_end=329
+  _globals['_TEAM']._serialized_start=331
+  _globals['_TEAM']._serialized_end=371
 # @@protoc_insertion_point(module_scope)
+
+def create(players, settings, teams):
+    return Game(
+        players=players,
+        settings=settings,
+        teams=teams,
+    )
