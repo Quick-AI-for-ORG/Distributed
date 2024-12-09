@@ -13,16 +13,16 @@
 <body>
     <header class="game-title">
         <h1>
-            Out Burst <i class="fas fa-bolt" style="color: rgb(255, 165, 0);"></i>
+            OutBurst <i class="fas fa-bolt" style="color: rgb(255, 165, 0);"></i>
         </h1>
     </header>
-    <div id="container">
-
+    <form id="container">
         <div class="input-container">
-            <input type="text" placeholder="Game session ID" />
-            <button><i class="fas fa-link"></i> Connect to Server</button>
+            <input id="playerName" type="text" placeholder="Player Name" required />
+            <input id="gameSession" type="text" placeholder="Game session ID" />
+            <button type="submit" id="sendButton"><i class="fas fa-link"></i> Connect to Server</button>
         </div>
-    </div>
+    </form>
 </body>
-
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
 </html>

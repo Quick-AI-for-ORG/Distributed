@@ -50,7 +50,6 @@ class Master(Server):
 
     async def registerServer(self, request, context):
         try:
-            ip,port = IPDecoder.getIP(context)
             server = GameServer.pbToObject(request)
             if server is None:
                 return ResultPB.create(
@@ -153,30 +152,26 @@ class Master(Server):
     
     async def checkHealth(self):
         while True:
-            await asyncio.sleep(10)
+            await asyncio.sleep(5)
             for server,health in list(self.registeredServers.values()):
-                async with grpc.aio.insecure_channel(self.getAddress()) as channel:
-                    gameServerStub = gameServerRPC.ServerStub(channel)
-                    try:
-                        result = await gameServerStub.checkHealth(
-                            GameServerPB.Health(isAlive=True)
-                            )
-                        print(Result.pbToObject(result))
-                        
-                        if not Result.pbToObject(result).isSuccess:
+                if health:
+                    await asyncio.sleep(2)
+                    async with grpc.aio.insecure_channel(server.getAddress()) as channel:
+                        gameServerStub = gameServerRPC.ServerStub(channel)
+                        try:
+                            result = await gameServerStub.checkHealth(
+                                GameServerPB.Health(isAlive=True)
+                                )
+                            
+                            self.registeredServers[server.getAddress()] = (server, True)
+                            print(Result.pbToObject(result))
+
+                        except Exception as e:
                             self.registeredServers[server.getAddress()] = (server, False)
                             self.loadBalancer.removeServer(server.getAddress())
-                            print(f"Server {server.getAddress()} is not healthy")
-                        else:
-                            self.registeredServers[server.getAddress()] = (server, True)
-                            print(f"Server {server.getAddress()} is healthy")
-                            
-                    except Exception as e:
-                        print( Result(
-                            isSuccess=False,
-                            message=f"Error Conducting Heartbeat Health Checks: {e}",
-                        ))
-                        
+                            print(Result(False, f"Server {server.getAddress()} is down.\n Error: {e}"))
+                            continue
+                    
     def addSessionToServer(self, server):
         for game in server.resource.sessions:
             if game.id not in self.activeSessions.keys():

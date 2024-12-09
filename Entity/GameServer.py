@@ -157,8 +157,7 @@ class GameServer(Server):
     
     async def checkHealth(self, request, context):
         try:
-                    message=f"Server {self.ip} is healthy"
-                    print(message)
+                    message=f"Game Server {self.getAddress()} is healthy"
                     return ResultPB.create(
                         isSuccess = True,
                         message= message
@@ -265,6 +264,7 @@ class GameServer(Server):
         
     async def listen(self):
        await asyncio.gather(
-            self.runServicer(),
-            self.registerServer(),)
+            self.registerServer(),
+            self.runServicer()
+            )
 

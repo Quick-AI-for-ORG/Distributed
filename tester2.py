@@ -9,13 +9,11 @@ from Entity.Master import Master
 from Entity.GameServer import GameServer
 
         
-m = Master()
 
 
-server1 = GameServer()
-# server2 = GameServer()
+server2 = GameServer()
 # server2.listen()
 async def main():
-    await asyncio.gather(m.runServicer(), server1.listen(), m.checkHealth())
+    await asyncio.gather(server2.listen())
     
 asyncio.run(main())
