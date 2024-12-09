@@ -61,34 +61,18 @@ class ServerStub(object):
                 request_serializer=Game__pb2.Context.SerializeToString,
                 response_deserializer=Result__pb2.Result.FromString,
                 _registered_method=True)
+        self.createGame = channel.unary_unary(
+                '/distributed.Server/createGame',
+                request_serializer=Game__pb2.Setting.SerializeToString,
+                response_deserializer=Result__pb2.Result.FromString,
+                _registered_method=True)
+        self.connectToGame = channel.unary_unary(
+                '/distributed.Server/connectToGame',
+                request_serializer=Game__pb2.Game.SerializeToString,
+                response_deserializer=Game__pb2.Game.FromString,
+                _registered_method=True)
 
 
-class ServerServicer(object):
-    """Missing associated documentation comment in .proto file."""
-
-    def connectPlayer(self, request, context):
-        """Missing associated documentation comment in .proto file."""
-        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details('Method not implemented!')
-        raise NotImplementedError('Method not implemented!')
-
-    def disconnectPlayer(self, request, context):
-        """Missing associated documentation comment in .proto file."""
-        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details('Method not implemented!')
-        raise NotImplementedError('Method not implemented!')
-
-    def checkHealth(self, request, context):
-        """Missing associated documentation comment in .proto file."""
-        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details('Method not implemented!')
-        raise NotImplementedError('Method not implemented!')
-
-    def sendUpdate(self, request, context):
-        """Missing associated documentation comment in .proto file."""
-        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details('Method not implemented!')
-        raise NotImplementedError('Method not implemented!')
 
 
 def add_ServerServicer_to_server(servicer, server):
@@ -112,6 +96,16 @@ def add_ServerServicer_to_server(servicer, server):
                     servicer.sendUpdate,
                     request_deserializer=Game__pb2.Context.FromString,
                     response_serializer=Result__pb2.Result.SerializeToString,
+            ),
+            'createGame': grpc.unary_unary_rpc_method_handler(
+                    servicer.createGame,
+                    request_deserializer=Game__pb2.Setting.FromString,
+                    response_serializer=Result__pb2.Result.SerializeToString,
+            ),
+            'connectToGame': grpc.unary_unary_rpc_method_handler(
+                    servicer.connectToGame,
+                    request_deserializer=Game__pb2.Game.FromString,
+                    response_serializer=Game__pb2.Game.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(

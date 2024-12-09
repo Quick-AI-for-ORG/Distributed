@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Page</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/game.css') }}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+
+</head>
+
+<!-- <div class="icon-container">
+    <i class="fas fa-film movie-icon"></i>
+    <i class="fas fa-music song-icon"></i>
+    <i class="fas fa-globe country-icon"></i>
+    <i class="fas fa-gamepad game-icon"></i>
+    <i class="fas fa-terminal command-icon"></i>
+    <i class="fas fa-utensils food-icon"></i>
+</div> -->
+
+
+<body>
+    <header class="game-title">
+        <h1>
+
+            OutBurst <i class="fas fa-bolt" style="color: rgb(255, 165, 0);"></i>
+        </h1>
+    </header>
+    <div id="container">
+        <h1>
+            <i class="fas fa-users" style="color: rgb(0, 52, 125); margin-right: 10px;"></i>
+            <span>Team
+                <span id="char"></span>
+                <span class="state-indicator">
+                    <span class="state green"></span>
+                    <span class="state yellow"></span>
+                    <span class="state red"></span>
+                </span>
+            </span>
+        </h1>
+
+        <div class="content">
+            <textarea placeholder="Message from the player..." readonly id="player-message"></textarea>
+            <div class="player-info">
+                <p><i class="fas fa-user" style="color: rgb(0, 52, 125);"></i> <strong>Name:</strong> <span
+                        id="player-name">Dodo</span></p>
+                <p><i class="fas fa-star" style="color: rgb(165, 176, 10);"></i> <strong>Score:</strong> <span
+                        id="player-score">1500</span></p>
+                <p><i class="fas fa-heart" style="color: rgb(250, 67, 67);"></i> <strong>Health:</strong> <span
+                        id="player-health">100</span></p>
+            </div>
+        </div>
+
+
+        <div class="input-container">
+            <input type="text" placeholder="Type your input here..." id="game-input" />
+            <button><i class="fas fa-paper-plane"></i> Send</button>
+            <button class="quit" onclick="showGameOver()"><i class="fas fa-times"></i> Quit</button>
+        </div>
+        <div id="game-over" style="display: none;">
+            <h1>Game Over</h1>
+        </div>
+    </div>
+    <script>
+        function showGameOver() {
+            const gameOverElement = document.getElementById('game-over');
+            gameOverElement.style.display = 'block';
+        }
+    </script>
+</body>
+
+</html>

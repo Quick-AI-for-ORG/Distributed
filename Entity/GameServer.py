@@ -25,9 +25,11 @@ from Entity.Resource import Resource
 
 """Import Protocol Buffers as __PB"""
 import Buffer.Result_pb2 as ResultPB
-import Buffer.Player_pb2 as PlayerPB
 import Buffer.GameServer_pb2 as GameServerPB
-import Buffer.Resource_pb2 as ResourcePB
+import Buffer.Game_pb2 as GamePB
+
+"""Import Algorithms"""
+import Algorithm.IPDecoder as IPDecoder
 
 """Class Definition and Implementation"""
 """Servicer inherits from __RPC.__Servicer"""
@@ -86,8 +88,9 @@ class GameServer(Server):
                 message=f"Error reading {context}: {e}",
             )
         try:
-                if player not in self.clients:
-                    self.clients[player]=player
+                ip = IPDecoder.getIP(context)[0]
+                if ip not in list(self.clients.keys()):
+                    self.clients[ip]= player
                     message = f"Player {player.name} registered successfully"
                 else:
                     message = f"Player {player.name} already registered"
@@ -103,7 +106,7 @@ class GameServer(Server):
                 )
     async def disconnectPlayer(self, request, context):
         try:
-            player = player.pbToObject(request)
+            player = Player.pbToObject(request)
             if player is None:
                 return ResultPB.create(
                     isSuccess = False,
@@ -115,8 +118,9 @@ class GameServer(Server):
                 message=f"Error reading player details from {context.peer()}: {e}",
             )
         try:
-            if player.id in self.clients:
-                del self.connectedPlayers[player.id] 
+            ip = IPDecoder.getIP(context)[0]
+            if ip in list(self.clients.keys()):
+                del self.clients[ip] 
                 message = f"Player {player.name} disconnected successfully"
             else:
                 message = f"Player {player.name} not found in active players"
@@ -165,15 +169,99 @@ class GameServer(Server):
                 message= f"Error checking server {self.ip} health: {e}"
             )
                 
-
+ 
     async def sendUpdate(self, request, context):
-        """Missing associated documentation comment in .proto file."""
-        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details('Method not implemented!')
-        raise NotImplementedError('Method not implemented!')
-    
+
+        try:
+            change = request.change
+            timestamp = request.timestamp
+            game_details = request.game
+
+            print(f"Update received: {change} at {timestamp}")
+            print(f"Game Details: {game_details}")
+                #    Validate Game Logic
+            for player_id, player_stub in self.clients.items():
+                try:
+                    await player_stub.receiveUpdate(request)
+                    print(f"Update sent to player {player_id}")
+                except Exception as e:
+                    print(f"Failed to send update to player {player_id}: {e}")
+
+            return ResultPB.create(
+                isSuccess=True,
+                message="Update sent to all players successfully."
+            )
+
+        except Exception as e:
+            return ResultPB.Result(
+                isSuccess=False,
+                message=f"Failed to send update: {e}"
+            )
+            
+    async def createGame(self, request, context):
+       try:
+           settings = (request.duration, request.packs)
+           if not settings:
+               return ResultPB.create(
+                   isSuccess=False,
+                   message="Invalid Game Settings"
+               )
+           game = Game(
+                        players = [self.clients.get(IPDecoder(context.peer()[0]))],
+                        settings= settings
+                    )
+           self.resource.sessions.append(game)
+           return ResultPB.create(
+                isSuccess=True,
+                message=f"Game {game.id} created successfully"
+              )
+       except Exception as e:
+            return ResultPB.create(
+                isSuccess=False,
+                message=f"Error creating game: {e}"
+            )
+           
+    async def connectToGame(self, request, context):
+        try:
+            game = Game.pbToObject(request)
+            if game is None:
+                return ResultPB.Response(
+                    result = ResultPB.create(
+                    isSuccess=False,
+                    message="Invalid Game Details"
+                ))
+        except Exception as e:
+            return ResultPB.Response(
+                result = ResultPB.create(
+                isSuccess=False,
+                message=f"Error reading game details from {context.peer()}: {e}"
+            ))
+        try:
+            for session in self.resource.sessions:
+                if session.id == game.id:
+                    session.addPlayer(self.clients.get(IPDecoder(context.peer()[0])))
+                    ResultPB.Response(
+                        result = ResultPB.create(
+                            isSuccess=True,
+                            message=f"Connected to {game.id} successfully",
+                    ),
+                        game = Game.objectToPb(session)
+            )
+          
+            return ResultPB.Response(
+                result = ResultPB.create(
+                    isSuccess=False,
+                    message=f"Game {game.id} not found",
+                )
+            )
+        except Exception as e:
+            return ResultPB.create(
+                isSuccess=False,
+                message=f"Error connecting to game {game.id}: {e}"
+            )
+        
     async def listen(self):
-        await asyncio.gather(self.runServicer(), self.registerServer())
-
-
+       await asyncio.gather(
+            self.runServicer(),
+            self.registerServer(),)
 

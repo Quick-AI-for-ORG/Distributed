@@ -13,6 +13,7 @@ sys.path.append(os.path.dirname("Algorithm"))
 
 """Import gRPC files as __RPC"""
 import Service.MasterService_pb2_grpc as masterRPC
+import Service.GameService_pb2_grpc as gameServerRPC
 
 """Import Entity Classes"""
 from Entity.Server import Server
@@ -28,6 +29,7 @@ import Buffer.Resource_pb2 as ResourcePB
 
 """Import Algorithms"""
 from Algorithm.LoadBalancing import ConsistentHashing
+import Algorithm.IPDecoder as IPDecoder
 
 
 """Class Definition and Implementation"""
@@ -48,6 +50,7 @@ class Master(Server):
 
     async def registerServer(self, request, context):
         try:
+            ip,port = IPDecoder.getIP(context)
             server = GameServer.pbToObject(request)
             if server is None:
                 return ResultPB.create(
@@ -148,7 +151,32 @@ class Master(Server):
                         ),
                     )
     
-    
+    async def checkHealth(self):
+        while True:
+            await asyncio.sleep(10)
+            for server,health in list(self.registeredServers.values()):
+                async with grpc.aio.insecure_channel(self.getAddress()) as channel:
+                    gameServerStub = gameServerRPC.ServerStub(channel)
+                    try:
+                        result = await gameServerStub.checkHealth(
+                            GameServerPB.Health(isAlive=True)
+                            )
+                        print(Result.pbToObject(result))
+                        
+                        if not Result.pbToObject(result).isSuccess:
+                            self.registeredServers[server.getAddress()] = (server, False)
+                            self.loadBalancer.removeServer(server.getAddress())
+                            print(f"Server {server.getAddress()} is not healthy")
+                        else:
+                            self.registeredServers[server.getAddress()] = (server, True)
+                            print(f"Server {server.getAddress()} is healthy")
+                            
+                    except Exception as e:
+                        print( Result(
+                            isSuccess=False,
+                            message=f"Error Conducting Heartbeat Health Checks: {e}",
+                        ))
+                        
     def addSessionToServer(self, server):
         for game in server.resource.sessions:
             if game.id not in self.activeSessions.keys():
@@ -158,17 +186,22 @@ class Master(Server):
         gRPCServer = grpc.aio.server(futures.ThreadPoolExecutor(max_workers=10))
         masterRPC.add_MasterServicer_to_server(self, gRPCServer)
         gRPCServer.add_insecure_port(f"{self.ip}:{self.port}")
+        
         try:
             await gRPCServer.start()
             print(str(self))
             await gRPCServer.wait_for_termination() 
             
+        except asyncio.CancelledError:
+            print(f"Master Server {self.getAddress()} Stopped")
         except KeyboardInterrupt:
-            await gRPCServer.stop(0)
-            await gRPCServer.shutdown()
-            print("Master Server Stopped")
-        
-        
-    async def main(self):
-        await self.runServicer()
+            print(f"Master Server {self.getAddress()} Stopped")
+        finally:
+            await gRPCServer.stop(grace=None)
+            
+    async def listen(self):
+        await asyncio.gather(
+            self.runServicer(),
+            self.checkHealth(),
+        )
 

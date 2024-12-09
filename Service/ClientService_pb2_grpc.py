@@ -3,10 +3,10 @@
 import grpc
 import warnings
 
+
 import os
 import sys
 sys.path.append(os.path.dirname("Buffer"))
-
 
 import Buffer.GameServer_pb2 as GameServer__pb2
 import Buffer.Game_pb2 as Game__pb2
@@ -41,6 +41,11 @@ class ClientStub(object):
         Args:
             channel: A grpc.Channel.
         """
+        self.startGame = channel.unary_unary(
+                '/distributed.Client/startGame',
+                request_serializer=Game__pb2.Game.SerializeToString,
+                response_deserializer=Result__pb2.Result.FromString,
+                _registered_method=True)
         self.recieveUpdate = channel.unary_unary(
                 '/distributed.Client/recieveUpdate',
                 request_serializer=Game__pb2.Context.SerializeToString,
@@ -55,6 +60,12 @@ class ClientStub(object):
 
 class ClientServicer(object):
     """Missing associated documentation comment in .proto file."""
+
+    def startGame(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
 
     def recieveUpdate(self, request, context):
         """Missing associated documentation comment in .proto file."""
@@ -71,6 +82,11 @@ class ClientServicer(object):
 
 def add_ClientServicer_to_server(servicer, server):
     rpc_method_handlers = {
+            'startGame': grpc.unary_unary_rpc_method_handler(
+                    servicer.startGame,
+                    request_deserializer=Game__pb2.Game.FromString,
+                    response_serializer=Result__pb2.Result.SerializeToString,
+            ),
             'recieveUpdate': grpc.unary_unary_rpc_method_handler(
                     servicer.recieveUpdate,
                     request_deserializer=Game__pb2.Context.FromString,
@@ -88,60 +104,3 @@ def add_ClientServicer_to_server(servicer, server):
     server.add_registered_method_handlers('distributed.Client', rpc_method_handlers)
 
 
- # This class is part of an EXPERIMENTAL API.
-class Client(object):
-    """Missing associated documentation comment in .proto file."""
-
-    @staticmethod
-    def recieveUpdate(request,
-            target,
-            options=(),
-            channel_credentials=None,
-            call_credentials=None,
-            insecure=False,
-            compression=None,
-            wait_for_ready=None,
-            timeout=None,
-            metadata=None):
-        return grpc.experimental.unary_unary(
-            request,
-            target,
-            '/distributed.Client/recieveUpdate',
-            Game__pb2.Context.SerializeToString,
-            Result__pb2.Result.FromString,
-            options,
-            channel_credentials,
-            insecure,
-            call_credentials,
-            compression,
-            wait_for_ready,
-            timeout,
-            metadata,
-            _registered_method=True)
-
-    @staticmethod
-    def changeServer(request,
-            target,
-            options=(),
-            channel_credentials=None,
-            call_credentials=None,
-            insecure=False,
-            compression=None,
-            wait_for_ready=None,
-            timeout=None,
-            metadata=None):
-        return grpc.experimental.unary_unary(
-            request,
-            target,
-            '/distributed.Client/changeServer',
-            GameServer__pb2.GameServer.SerializeToString,
-            Result__pb2.Result.FromString,
-            options,
-            channel_credentials,
-            insecure,
-            call_credentials,
-            compression,
-            wait_for_ready,
-            timeout,
-            metadata,
-            _registered_method=True)

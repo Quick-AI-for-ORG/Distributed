@@ -18,9 +18,6 @@ import Service.ClientService_pb2_grpc as playerRPC
 
 """Import Entity Classes"""
 from Entity.Result import Result
-from Entity.Player import Player
-from Entity.GameServer import GameServer
-from Entity.Game import Game
 
 """Import Protocol Buffers as __PB"""
 import Buffer.Result_pb2 as ResultPB
@@ -29,7 +26,6 @@ import Buffer.GameServer_pb2 as GameServerPB
 
 class Player:
     count = 0
-    
     def pbToObject(pb):
         if not pb: return None
         return Player(pb.id, pb.name, pb.health, pb.score)
@@ -42,7 +38,7 @@ class Player:
             score=obj.score,
         )
     
-    def __init__(self, id=0, name="Player", health=3, score=0, master=None):
+    def __init__(self, id=0, name="Player", health=3, score=0, master=None, gameServer=None, gameSession=None):
         if not id > 0: 
             Player.count += 1
             self.id = Player.count
@@ -52,13 +48,15 @@ class Player:
         self.health = health
         self.score = score
         self.master = "localhost:7777" if master is None else master
+        self.gameServer = None if gameServer is None else gameServer
+        self.gameSession = None if gameSession is None else gameSession
 
     def __str__(self):
         return f"Player {self.id} : {self.name} with {self.health} health and {self.score} score"
 
     async def connectPlayer(self):
         if self.gameServer:
-            async with grpc.aio.insecure_channel(self.gameServer.getAddress()) as channel:
+            async with grpc.aio.insecure_channel(self.gameServer) as channel:
                 self.gameServerStub = gameServerRPC.ServerStub(channel)
                 try:
                     result = await self.gameServerStub.connectPlayer(Player.objectToPb(self))
@@ -66,7 +64,7 @@ class Player:
                 except Exception as e:
                     print(Result(
                         isSuccess=False,
-                        message=f"Error connecting to Game Server {self.gameServer.getAddress()}: {e}",
+                        message=f"Error connecting to Game Server {self.gameServer}: {e}",
                     ))
         else: print(Result(
                         isSuccess=False,
@@ -75,7 +73,7 @@ class Player:
 
     async def disconnectPlayer(self):
         if self.gameServer:
-             async with grpc.aio.insecure_channel(self.gameServer.getAddress()) as channel:
+             async with grpc.aio.insecure_channel(self.gameServer) as channel:
                 self.gameServerStub = gameServerRPC.ServerStub(channel)
                 try:
                     result = await self.gameServerStub.disconnectPlayer(Player.objectToPb(self))
@@ -83,7 +81,7 @@ class Player:
                 except Exception as e:
                     print(Result(
                         isSuccess=False,
-                        message=f"Error connecting to Game Server {self.gameServer.getAddress()}: {e}",
+                        message=f"Error connecting to Game Server {self.gameServer}: {e}",
                     ))
         else: print(Result(
                         isSuccess=False,
@@ -95,10 +93,10 @@ class Player:
         async with grpc.aio.insecure_channel(self.master) as channel:
             self.masterStub = masterRPC.MasterStub(channel)
             try:
-                if self.game:
+                if self.gameSession:
                     result = await self.masterStub.requestServer(
                     ResultPB.Register(player= Player.objectToPb(self),
-                                    game= Game.objectToPb(self.game))
+                                    game= self.gameSession)
                 )
                 else:
                     result = await self.masterStub.requestServer(
@@ -106,8 +104,9 @@ class Player:
                             player=Player.objectToPb(self)
                         )
                     )
+                    
                 print(Result.pbToObject(result.result))
-                try: self.gameServer = GameServer.pbToObject(result.gameServer)
+                try: self.gameServer = f"{result.gameServer.ip}:{result.gameServer.port}"
                 except Exception as e:
                     print(Result(
                         isSuccess=False,
@@ -118,6 +117,15 @@ class Player:
                     isSuccess=False,
                     message=f"Error connecting to Master: {e}",
                 ))
+                  
+        await asyncio.sleep(3)  # Waits for 1 second
+        await self.connectPlayer()
+        await asyncio.sleep(3)
+        await self.disconnectPlayer()
 
 
-
+    async def listen(self):
+       await asyncio.gather(
+            self.requestServer(),
+            
+        )    
