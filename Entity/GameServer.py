@@ -26,6 +26,7 @@ from Entity.Resource import Resource
 """Import Protocol Buffers as __PB"""
 import Buffer.Result_pb2 as ResultPB
 import Buffer.GameServer_pb2 as GameServerPB
+import Buffer.Game_pb2 as GamePB
 
 """Import Algorithms"""
 import Algorithm.IPDecoder as IPDecoder
@@ -195,6 +196,68 @@ class GameServer(Server):
             return ResultPB.Result(
                 isSuccess=False,
                 message=f"Failed to send update: {e}"
+            )
+            
+    async def createGame(self, request, context):
+       try:
+           settings = (request.duration, request.packs)
+           if not settings:
+               return ResultPB.create(
+                   isSuccess=False,
+                   message="Invalid Game Settings"
+               )
+           game = Game(
+                        players = [self.clients.get(IPDecoder(context.peer()[0]))],
+                        settings= settings
+                    )
+           self.resource.sessions.append(game)
+           return ResultPB.create(
+                isSuccess=True,
+                message=f"Game {game.id} created successfully"
+              )
+       except Exception as e:
+            return ResultPB.create(
+                isSuccess=False,
+                message=f"Error creating game: {e}"
+            )
+           
+    async def connectToGame(self, request, context):
+        try:
+            game = Game.pbToObject(request)
+            if game is None:
+                return ResultPB.Response(
+                    result = ResultPB.create(
+                    isSuccess=False,
+                    message="Invalid Game Details"
+                ))
+        except Exception as e:
+            return ResultPB.Response(
+                result = ResultPB.create(
+                isSuccess=False,
+                message=f"Error reading game details from {context.peer()}: {e}"
+            ))
+        try:
+            for session in self.resource.sessions:
+                if session.id == game.id:
+                    session.addPlayer(self.clients.get(IPDecoder(context.peer()[0])))
+                    ResultPB.Response(
+                        result = ResultPB.create(
+                            isSuccess=True,
+                            message=f"Connected to {game.id} successfully",
+                    ),
+                        game = Game.objectToPb(session)
+            )
+          
+            return ResultPB.Response(
+                result = ResultPB.create(
+                    isSuccess=False,
+                    message=f"Game {game.id} not found",
+                )
+            )
+        except Exception as e:
+            return ResultPB.create(
+                isSuccess=False,
+                message=f"Error connecting to game {game.id}: {e}"
             )
         
     async def listen(self):

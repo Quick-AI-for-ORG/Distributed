@@ -2,6 +2,7 @@
 """Client and server classes corresponding to protobuf-defined services."""
 import grpc
 import warnings
+
 import os
 import sys
 sys.path.append(os.path.dirname("Buffer"))
@@ -65,6 +66,11 @@ class ServerStub(object):
                 request_serializer=Game__pb2.Setting.SerializeToString,
                 response_deserializer=Result__pb2.Result.FromString,
                 _registered_method=True)
+        self.connectToGame = channel.unary_unary(
+                '/distributed.Server/connectToGame',
+                request_serializer=Game__pb2.Game.SerializeToString,
+                response_deserializer=Game__pb2.Game.FromString,
+                _registered_method=True)
 
 
 
@@ -95,6 +101,11 @@ def add_ServerServicer_to_server(servicer, server):
                     servicer.createGame,
                     request_deserializer=Game__pb2.Setting.FromString,
                     response_serializer=Result__pb2.Result.SerializeToString,
+            ),
+            'connectToGame': grpc.unary_unary_rpc_method_handler(
+                    servicer.connectToGame,
+                    request_deserializer=Game__pb2.Game.FromString,
+                    response_serializer=Game__pb2.Game.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(

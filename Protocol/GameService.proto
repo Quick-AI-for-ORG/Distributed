@@ -12,4 +12,5 @@ service Server {
     rpc checkHealth (Health) returns (Result);
     rpc sendUpdate (Context) returns (Result);
     rpc createGame (Setting) returns (Result);
+    rpc connectToGame (Game) returns (Game);
 }

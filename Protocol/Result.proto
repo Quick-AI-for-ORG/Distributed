@@ -18,4 +18,5 @@ message Register {
 message Response {
     Result result = 1;
     GameServer gameServer = 2;
+    Game game = 3;
 }
