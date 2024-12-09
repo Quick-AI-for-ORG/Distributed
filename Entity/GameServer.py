@@ -223,23 +223,26 @@ class GameServer(Server):
            
     async def connectToGame(self, request, context):
         try:
-            game = Game.pbToObject(request)
-            if game is None:
+            player = Player.pbToObject(request.player)
+            if player is None:
                 return ResultPB.Response(
                     result = ResultPB.create(
                     isSuccess=False,
-                    message="Invalid Game Details"
+                    message="Invalid Player Details"
                 ))
         except Exception as e:
             return ResultPB.Response(
                 result = ResultPB.create(
                 isSuccess=False,
-                message=f"Error reading game details from {context.peer()}: {e}"
+                message=f"Error reading player details from {context.peer()}: {e}"
             ))
         try:
             for session in self.resource.sessions:
-                if session.id == game.id:
-                    session.addPlayer(self.clients.get(IPDecoder(context.peer()[0])))
+                if session.id == request.game:
+                    ip = IPDecoder.getIP(context)[0]
+                    if ip not in list(self.clients.keys()):
+                        self.clients[ip]= player
+                    session.addPlayer(self.clients[ip])
                     ResultPB.Response(
                         result = ResultPB.create(
                             isSuccess=True,

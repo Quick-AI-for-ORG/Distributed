@@ -68,11 +68,49 @@ class ServerStub(object):
                 _registered_method=True)
         self.connectToGame = channel.unary_unary(
                 '/distributed.Server/connectToGame',
-                request_serializer=Game__pb2.Game.SerializeToString,
+                request_serializer=Result__pb2.Register.SerializeToString,
                 response_deserializer=Game__pb2.Game.FromString,
                 _registered_method=True)
 
 
+class ServerServicer(object):
+    """Missing associated documentation comment in .proto file."""
+
+    def connectPlayer(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def disconnectPlayer(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def checkHealth(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def sendUpdate(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def createGame(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def connectToGame(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
 
 
 def add_ServerServicer_to_server(servicer, server):
@@ -104,7 +142,7 @@ def add_ServerServicer_to_server(servicer, server):
             ),
             'connectToGame': grpc.unary_unary_rpc_method_handler(
                     servicer.connectToGame,
-                    request_deserializer=Game__pb2.Game.FromString,
+                    request_deserializer=Result__pb2.Register.FromString,
                     response_serializer=Game__pb2.Game.SerializeToString,
             ),
     }
@@ -113,3 +151,169 @@ def add_ServerServicer_to_server(servicer, server):
     server.add_generic_rpc_handlers((generic_handler,))
     server.add_registered_method_handlers('distributed.Server', rpc_method_handlers)
 
+
+ # This class is part of an EXPERIMENTAL API.
+class Server(object):
+    """Missing associated documentation comment in .proto file."""
+
+    @staticmethod
+    def connectPlayer(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/distributed.Server/connectPlayer',
+            Player__pb2.Player.SerializeToString,
+            Result__pb2.Result.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def disconnectPlayer(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/distributed.Server/disconnectPlayer',
+            Player__pb2.Player.SerializeToString,
+            Result__pb2.Result.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def checkHealth(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/distributed.Server/checkHealth',
+            GameServer__pb2.Health.SerializeToString,
+            Result__pb2.Result.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def sendUpdate(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/distributed.Server/sendUpdate',
+            Game__pb2.Context.SerializeToString,
+            Result__pb2.Result.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def createGame(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/distributed.Server/createGame',
+            Game__pb2.Setting.SerializeToString,
+            Result__pb2.Result.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def connectToGame(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/distributed.Server/connectToGame',
+            Result__pb2.Register.SerializeToString,
+            Game__pb2.Game.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
