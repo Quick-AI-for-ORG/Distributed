@@ -1,0 +1,161 @@
+body {
+  margin: 0;
+  padding: 0;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-color: #f4f4f4;
+}
+
+header.game-title {
+  margin-bottom: 20px;
+}
+
+header.game-title h1 {
+  font-size: 3rem;
+  font-weight: bold;
+  color: #00337d;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+#container {
+  width: 600px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  padding: 20px;
+  background: #fff;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.content {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 20px;
+}
+
+textarea {
+  width: 100%;
+  height: 150px;
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  resize: none;
+  background-color: #f9f9f9;
+  cursor: not-allowed;
+}
+
+textarea[readonly] {
+  background-color: #f9f9f9;
+}
+
+.player-info {
+  width: 35%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  background-color: #f8f8f8;
+  text-align: left;
+  font-size: 14px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.player-info p {
+  margin: 8px 0;
+}
+
+.input-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+input[type="text"] {
+  width: 80%;
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+
+button {
+  padding: 10px 20px;
+  background-color: #0b5bb1;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #0a498d;
+}
+
+button i {
+  margin-right: 5px;
+}
+
+#game-over {
+  display: none;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(0, 0, 0, 0.8);
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+}
+
+#game-over h1 {
+  color: #ff0000;
+  margin: 0;
+  font-size: 2.5rem;
+  text-align: center;
+}
+.quit {
+  padding: 10px 20px;
+  background-color: #d21515;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.quit:hover {
+  background-color: #8d0c0a;
+}
+
+.state-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin-left: 10px;
+}
+
+.state {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  display: none;
+}
+
+.state.green {
+  background-color: green;
+  display: inline-block;
+}
+
+.state.yellow {
+  background-color: yellow;
+}
+
+.state.red {
+  background-color: red;
+}
