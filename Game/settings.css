@@ -1,0 +1,94 @@
+body {
+  margin: 0;
+  padding: 0;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-color: #f4f4f4;
+}
+
+header.game-title {
+  margin-bottom: 20px;
+}
+
+header.game-title h1 {
+  font-size: 3rem;
+  font-weight: bold;
+  color: #333;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+#container {
+  width: 700px;
+  border: 1px solid transparent;
+  border-radius: 15px;
+  padding: 20px;
+  background: #ffffff;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+  font-family: "Arial", sans-serif;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+#container:hover {
+  transform: scale(1.05);
+  box-shadow: 0 12px 25px rgba(0, 0, 0, 0.3);
+}
+
+.header {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #00337d;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.settings {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 20px;
+}
+
+.left-section,
+.right-section {
+  flex: 1;
+}
+
+.left-section label,
+.right-section label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 15px;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.left-section input[type="checkbox"],
+.right-section input[type="radio"] {
+  cursor: pointer;
+}
+
+.start-game-button {
+  padding: 15px 30px;
+  font-size: 1.2rem;
+  background: #0b5bb1;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  text-align: center;
+}
+
+.start-game-button:hover {
+  background: #0a498d;
+}
