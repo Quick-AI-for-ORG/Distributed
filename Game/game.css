@@ -6,7 +6,7 @@ body {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  background-color: #f4f4f4;
+  background-color: #ddfaff;
 }
 
 header.game-title {
@@ -16,7 +16,7 @@ header.game-title {
 header.game-title h1 {
   font-size: 3rem;
   font-weight: bold;
-  color: #00337d;
+  color: #333;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -25,12 +25,21 @@ header.game-title h1 {
 
 #container {
   width: 600px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
+  border: 1px solid transparent;
+  border-radius: 15px;
   padding: 20px;
-  background: #fff;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  border-color: #00337d;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
   text-align: center;
+  color: #333;
+  background-color: #ffffff;
+  font-family: "Arial", sans-serif;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+#container:hover {
+  transform: scale(1.05);
+  box-shadow: 0 12px 25px rgba(0, 0, 0, 0.3);
 }
 
 .content {
@@ -42,13 +51,16 @@ header.game-title h1 {
 
 textarea {
   width: 100%;
-  height: 150px;
-  padding: 10px;
-  border-radius: 5px;
-  border: 1px solid #ccc;
+  height: 120px;
+  padding: 15px;
+  margin: 10px;
+  border-radius: 10px;
+  border: none;
   resize: none;
-  background-color: #f9f9f9;
-  cursor: not-allowed;
+  background-color: rgba(255, 255, 255, 0.8);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  font-family: "Arial", sans-serif;
+  font-size: 14px;
 }
 
 textarea[readonly] {
@@ -58,24 +70,28 @@ textarea[readonly] {
 .player-info {
   width: 35%;
   padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  background-color: #f8f8f8;
+  border: none;
+  border-radius: 10px;
+  background-color: rgba(255, 255, 255, 0.8);
   text-align: left;
   font-size: 14px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
 .player-info p {
-  margin: 8px 0;
+  margin: 10px 0;
+  font-weight: bold;
 }
 
-.input-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 10px;
-  margin-top: 10px;
+.input-container input[type="text"] {
+  width: 80%;
+  padding: 15px;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  background-color: rgba(255, 255, 255, 0.9);
+  font-size: 14px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  margin-bottom: 10px;
 }
 
 input[type="text"] {
