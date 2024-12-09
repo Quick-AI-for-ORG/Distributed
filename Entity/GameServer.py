@@ -25,9 +25,10 @@ from Entity.Resource import Resource
 
 """Import Protocol Buffers as __PB"""
 import Buffer.Result_pb2 as ResultPB
-import Buffer.Player_pb2 as PlayerPB
 import Buffer.GameServer_pb2 as GameServerPB
-import Buffer.Resource_pb2 as ResourcePB
+
+"""Import Algorithms"""
+import Algorithm.IPDecoder as IPDecoder
 
 """Class Definition and Implementation"""
 """Servicer inherits from __RPC.__Servicer"""
@@ -86,8 +87,9 @@ class GameServer(Server):
                 message=f"Error reading {context}: {e}",
             )
         try:
-                if player not in self.clients:
-                    self.clients[player]=player
+                ip = IPDecoder.getIP(context)[0]
+                if ip not in list(self.clients.keys()):
+                    self.clients[ip]= player
                     message = f"Player {player.name} registered successfully"
                 else:
                     message = f"Player {player.name} already registered"
@@ -103,7 +105,7 @@ class GameServer(Server):
                 )
     async def disconnectPlayer(self, request, context):
         try:
-            player = player.pbToObject(request)
+            player = Player.pbToObject(request)
             if player is None:
                 return ResultPB.create(
                     isSuccess = False,
@@ -115,8 +117,9 @@ class GameServer(Server):
                 message=f"Error reading player details from {context.peer()}: {e}",
             )
         try:
-            if player.id in self.clients:
-                del self.connectedPlayers[player.id] 
+            ip = IPDecoder.getIP(context)[0]
+            if ip in list(self.clients.keys()):
+                del self.clients[ip] 
                 message = f"Player {player.name} disconnected successfully"
             else:
                 message = f"Player {player.name} not found in active players"

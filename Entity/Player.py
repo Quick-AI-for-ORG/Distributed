@@ -104,6 +104,7 @@ class Player:
                             player=Player.objectToPb(self)
                         )
                     )
+                    
                 print(Result.pbToObject(result.result))
                 try: self.gameServer = f"{result.gameServer.ip}:{result.gameServer.port}"
                 except Exception as e:
@@ -116,9 +117,15 @@ class Player:
                     isSuccess=False,
                     message=f"Error connecting to Master: {e}",
                 ))
+                  
+        await asyncio.sleep(3)  # Waits for 1 second
+        await self.connectPlayer()
+        await asyncio.sleep(3)
+        await self.disconnectPlayer()
 
 
     async def listen(self):
        await asyncio.gather(
             self.requestServer(),
+            
         )    
