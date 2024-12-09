@@ -5,6 +5,10 @@ app = Flask(__name__)
 def main():
     return render_template('main.html')
 
+@app.route('/game')
+def game():
+    return render_template('game.html')
+
 @app.route('/requestServer', methods=['POST'])
 def requestServer():
     input_data = request.json.get('data')
