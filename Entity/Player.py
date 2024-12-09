@@ -26,7 +26,6 @@ import Buffer.GameServer_pb2 as GameServerPB
 
 class Player:
     count = 0
-    
     def pbToObject(pb):
         if not pb: return None
         return Player(pb.id, pb.name, pb.health, pb.score)
@@ -39,7 +38,7 @@ class Player:
             score=obj.score,
         )
     
-    def __init__(self, id=0, name="Player", health=3, score=0, master=None):
+    def __init__(self, id=0, name="Player", health=3, score=0, master=None, gameServer=None, gameSession=None):
         if not id > 0: 
             Player.count += 1
             self.id = Player.count
@@ -49,6 +48,8 @@ class Player:
         self.health = health
         self.score = score
         self.master = "localhost:7777" if master is None else master
+        self.gameServer = None if gameServer is None else gameServer
+        self.gameSession = None if gameSession is None else gameSession
 
     def __str__(self):
         return f"Player {self.id} : {self.name} with {self.health} health and {self.score} score"
@@ -92,10 +93,10 @@ class Player:
         async with grpc.aio.insecure_channel(self.master) as channel:
             self.masterStub = masterRPC.MasterStub(channel)
             try:
-                if self.game:
+                if self.gameSession:
                     result = await self.masterStub.requestServer(
                     ResultPB.Register(player= Player.objectToPb(self),
-                                    game= Game.objectToPb(self.game))
+                                    game= self.gameSession)
                 )
                 else:
                     result = await self.masterStub.requestServer(
@@ -117,4 +118,7 @@ class Player:
                 ))
 
 
-
+    async def listen(self):
+       await asyncio.gather(
+            self.requestServer(),
+        )    

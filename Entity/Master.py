@@ -49,10 +49,7 @@ class Master(Server):
         return f"Master Server running at {self.ip}:{self.port}"
 
     async def registerServer(self, request, context):
-        async with grpc.aio.insecure_channel(self.getAddress) as channel:
-            self.gameStub = gameServerRPC.ServerStub(channel)
         try:
-            
             ip,port = IPDecoder.getIP(context)
             server = GameServer.pbToObject(request)
             if server is None:
@@ -202,7 +199,7 @@ class Master(Server):
         finally:
             await gRPCServer.stop(grace=None)
             
-    async def main(self):
+    async def listen(self):
         await asyncio.gather(
             self.runServicer(),
             self.checkHealth(),
