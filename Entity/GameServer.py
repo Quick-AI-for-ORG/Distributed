@@ -4,9 +4,11 @@ import sys
 import grpc
 import asyncio
 import tracemalloc
+import pandas as pd
 import concurrent.futures as futures
 
 """Import Folder Paths"""
+sys.path.append(os.path.dirname("Data"))
 sys.path.append(os.path.dirname("Buffer"))
 sys.path.append(os.path.dirname("Entity"))
 sys.path.append(os.path.dirname("Service"))
@@ -52,12 +54,23 @@ class GameServer(Server):
             resource=Resource.objectToPb(obj.resource),
         )
     
+    def loadWordPacks(self):
+        try:
+            packs = {}
+            for packName in os.listdir("./Data"):
+                if packName.endswith(".csv"):
+                    pack = pd.read_csv(f"./Data/{packName}")
+                    packs[packName.split(".")[0]] = pack.values.flatten()
+        except Exception as e:
+            print(Result(False,f"Error loading word packs: {e}"))
+            
     def __init__(self, ip="localhost", port=None, resourceLimit=4, resource=None, master=None):
         super().__init__(ip, port)
         self.resourceLimit = resourceLimit
         self.resource = Resource(resourceLimit) if resource is None else resource
         self.master = "localhost:7777" if master is None else master
         self.clients = {}
+        self.packs = self.loadWordPacks()
         
     def __str__(self):
         return f"Game Server running at {self.ip}:{self.port} with {self.resource}"
