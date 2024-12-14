@@ -17,7 +17,7 @@ header.game-title {
 header.game-title h1 {
   font-size: 3rem;
   font-weight: bold;
-  color: #00337d;
+  color: #333;
   display: flex;
   align-items: center;
   justify-content: center;
