@@ -22,7 +22,7 @@ form.addEventListener('submit', async (event) => {
 
     if (result.isSuccess) {
         console.log('Success : ' + result.message);
-        window.location.href = '/game';
+        window.location.href = '/gameSettings';
     } else {
         console.log('Failure : ' + result.message);
     }

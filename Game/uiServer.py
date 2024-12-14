@@ -31,15 +31,13 @@ async def requestServer():
     result = Result.pbToObject(result.result)
     return jsonify({'isSuccess': result.isSuccess, 'message': result.message})
 
-@app.route('/sendUpdate', methods=['POST'])
-def send_data():
-    input_data = request.json.get('data')
 
-    return jsonify({'response': "tmmam"})
 
-@app.route('/recieveUpdate', methods=['GET'])
-def recieve_data():
-    return jsonify({'response': "tmmam"})
+@app.route('/gameSettings')
+def gameSettings():
+    return render_template('settings.html')
+
+
 
 if __name__ == '__main__':
     app.run(debug=True)
