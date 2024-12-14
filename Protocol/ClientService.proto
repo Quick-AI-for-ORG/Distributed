@@ -6,6 +6,7 @@ import "Result.proto";
 import "GameServer.proto";
 
 service Client {
+    rpc startGame (Game) returns (Result);
     rpc recieveUpdate (Context) returns (Result);
     rpc changeServer (GameServer) returns (Result);
 }

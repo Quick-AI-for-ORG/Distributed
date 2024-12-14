@@ -89,11 +89,12 @@ class Player:
                     ))
 
 
-    async def requestServer(self):
+    async def requestServer(self, gameSession=None):
         async with grpc.aio.insecure_channel(self.master) as channel:
             self.masterStub = masterRPC.MasterStub(channel)
             try:
-                if self.gameSession:
+                if gameSession:
+                    self.gameSession = gameSession
                     result = await self.masterStub.requestServer(
                     ResultPB.Register(player= Player.objectToPb(self),
                                     game= self.gameSession)
@@ -104,28 +105,30 @@ class Player:
                             player=Player.objectToPb(self)
                         )
                     )
-                    
-                print(Result.pbToObject(result.result))
-                try: self.gameServer = f"{result.gameServer.ip}:{result.gameServer.port}"
+                try: 
+                    self.gameServer = f"{result.gameServer.ip}:{result.gameServer.port}"
+                    return result
                 except Exception as e:
-                    print(Result(
+                    result = Result(
                         isSuccess=False,
                         message=f"Invalid Game Server data recieved: {e}",
-                    ))
+                    )
+                    print(result)
+                    return Result.objectToPb(result)
             except Exception as e:
-                  print(Result(
+                  result =Result(
                     isSuccess=False,
                     message=f"Error connecting to Master: {e}",
-                ))
+                    )
+                  print(result)
+                  return Result.objectToPb(result)
                   
-        await asyncio.sleep(3)  # Waits for 1 second
-        await self.connectPlayer()
-        await asyncio.sleep(3)
-        await self.disconnectPlayer()
-
 
     async def listen(self):
        await asyncio.gather(
             self.requestServer(),
+            asyncio.sleep(3),
+            self.connectPlayer(),
+            self.disconnectPlayer()
             
         )    

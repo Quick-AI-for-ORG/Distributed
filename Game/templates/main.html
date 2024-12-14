@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Page</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+
+</head>
+
+<body>
+    <header class="game-title">
+        <h1>
+            OutBurst <i class="fas fa-bolt" style="color: rgb(255, 165, 0);"></i>
+        </h1>
+    </header>
+    <form id="container">
+        <div class="input-container">
+            <input id="playerName" type="text" placeholder="Player Name" required />
+            <input id="gameSession" type="text" placeholder="Game session ID" />
+            <button type="submit" id="sendButton"><i class="fas fa-link"></i> Connect to Server</button>
+        </div>
+    </form>
+</body>
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</html>
