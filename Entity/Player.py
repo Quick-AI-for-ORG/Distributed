@@ -54,7 +54,7 @@ class Player:
         self.gameSession = None if gameSession is None else gameSession
 
     def __str__(self):
-        return f"Player {self.id} : {self.name} with {self.health} health and {self.score} score"
+        return f"Player {self.id} : {self.name} has {self.score} score"
     
     def changeName(self,name):
         self.name = name

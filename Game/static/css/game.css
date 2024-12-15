@@ -44,10 +44,14 @@ header.game-title h1 {
 }
 
 .content {
+  width:100%;
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: flex-start;
   gap: 20px;
+  align-items: center;
+  margin-bottom:3%;
+  
 }
 
 textarea {
@@ -78,6 +82,9 @@ textarea[readonly] {
   font-size: 14px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
+.player-info i, .player-info span{
+  margin:1%
+}
 
 .player-info p {
   margin: 10px 0;
@@ -92,7 +99,8 @@ textarea[readonly] {
   background-color: rgba(255, 255, 255, 0.9);
   font-size: 14px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  margin-bottom: 10px;
+  margin-bottom: 6%;
+
 }
 
 input[type="text"] {
@@ -125,14 +133,14 @@ button i {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  background: rgba(0, 0, 0, 0.8);
+  background: #333;
   padding: 20px;
   border-radius: 10px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
 }
 
 #game-over h1 {
-  color: #ff0000;
+  color: #bc1111;
   margin: 0;
   font-size: 2.5rem;
   text-align: center;

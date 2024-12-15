@@ -20,20 +20,20 @@ app = Flask(__name__)
 player = None
 gameServer = None
 game = None
-players = []
+words = []
 @app.route('/')
 def main():
     return render_template('main.html')
 
 @app.route('/game')
 def game():
-    return render_template('game.html')
+    global player, game
+    return render_template('game.html',player=player, players=game.players,game=game, word="Movieee", round=game.round)
 
 @app.route('/requestServer', methods=['POST'])
 async def requestServer():
     global player, gameServer, players, game
     player = Player(name=request.json.get('playerName'),master='192.168.1.44:7777')
-    players.append(player)
     gameSession = int(request.json.get('gameSession')) if request.json.get('gameSession') else None
     result = await player.requestServer(gameSession)
     
@@ -65,11 +65,12 @@ async def disconnectPlayer():
 
 @app.route('/createGame', methods=['POST'])
 async def createGame():
-    global player, game
+    global player, game, words
     packs = request.json.get('wordPacks')
     duration = request.json.get('duration')
     result = await player.createGame(packs, duration)
     game = Game.pbToObject(result.game)
+    words = game.words
     result = Result.pbToObject(result.result)
     return jsonify({'isSuccess': result.isSuccess, 'message': result.message})
 
@@ -77,8 +78,8 @@ async def createGame():
 
 @app.route('/lobby')
 def lobby():
-    global game
-    return render_template('lobby.html', game=game, players=game.players)
+    global game, words
+    return render_template('lobby.html', game=game, players=game.players, words=words)
 
 @app.route('/gameSettings')
 def gameSettings():
@@ -90,7 +91,6 @@ def gameSettings():
 async def startGame():
     global game, player
     result = await player.startGame(game.id)
-    print(result)
     if(isinstance(result,dict) and result['result']):
         game = Game.pbToObject(result['game'])
         return jsonify({'isSuccess': result['result'].isSuccess, 'message': result['result'].message})

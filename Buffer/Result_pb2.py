@@ -30,7 +30,7 @@ import Buffer.Player_pb2 as Player__pb2
 import Buffer.GameServer_pb2 as GameServer__pb2
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x0cResult.proto\x12\x0b\x64istributed\x1a\nGame.proto\x1a\x0cPlayer.proto\x1a\x10GameServer.proto\",\n\x06Result\x12\x11\n\tisSuccess\x18\x01 \x01(\x08\x12\x0f\n\x07message\x18\x02 \x01(\t\"d\n\x08Register\x12#\n\x06player\x18\x01 \x01(\x0b\x32\x13.distributed.Player\x12\x0c\n\x04game\x18\x02 \x01(\x05\x12%\n\x07setting\x18\x03 \x01(\x0b\x32\x14.distributed.Setting\"\x98\x01\n\x08Response\x12#\n\x06result\x18\x01 \x01(\x0b\x32\x13.distributed.Result\x12+\n\ngameServer\x18\x02 \x01(\x0b\x32\x17.distributed.GameServer\x12\x1f\n\x04game\x18\x03 \x01(\x0b\x32\x11.distributed.Game\x12\x19\n\x11gameServerAddress\x18\x04 \x01(\tb\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x0cResult.proto\x12\x0b\x64istributed\x1a\nGame.proto\x1a\x0cPlayer.proto\x1a\x10GameServer.proto\",\n\x06Result\x12\x11\n\tisSuccess\x18\x01 \x01(\x08\x12\x0f\n\x07message\x18\x02 \x01(\t\"d\n\x08Register\x12#\n\x06player\x18\x01 \x01(\x0b\x32\x13.distributed.Player\x12\x0c\n\x04game\x18\x02 \x01(\x05\x12%\n\x07setting\x18\x03 \x01(\x0b\x32\x14.distributed.Setting\"\xba\x01\n\x08Response\x12#\n\x06result\x18\x01 \x01(\x0b\x32\x13.distributed.Result\x12+\n\ngameServer\x18\x02 \x01(\x0b\x32\x17.distributed.GameServer\x12\x1f\n\x04game\x18\x03 \x01(\x0b\x32\x11.distributed.Game\x12\x19\n\x11gameServerAddress\x18\x04 \x01(\t\x12 \n\x05words\x18\x05 \x01(\x0b\x32\x11.distributed.Wordb\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
@@ -42,7 +42,7 @@ if not _descriptor._USE_C_DESCRIPTORS:
   _globals['_REGISTER']._serialized_start=119
   _globals['_REGISTER']._serialized_end=219
   _globals['_RESPONSE']._serialized_start=222
-  _globals['_RESPONSE']._serialized_end=374
+  _globals['_RESPONSE']._serialized_end=408
 # @@protoc_insertion_point(module_scope)
 
 

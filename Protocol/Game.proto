@@ -8,9 +8,10 @@ message Game {
     int32 MAX_PLAYERS = 3;
     repeated Player players = 4;
     int32 rounds = 5;
-    repeated Team teams = 6;
     Setting settings = 7;
     repeated string playersInput = 8;
+    Word words= 9;
+    Player clueGiver = 10;
 }
 
 message Context {
@@ -23,7 +24,6 @@ message Setting {
     string duration = 1;
     repeated string packs = 2;
 }
-message Team {
-    int32 player1 =1;
-    int32 player2 = 2;
+message Word {
+    repeated string words = 1;
 }

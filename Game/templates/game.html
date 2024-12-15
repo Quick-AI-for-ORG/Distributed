@@ -31,8 +31,7 @@
     </header>
     <div id="container">
         <h1>
-            <i class="fas fa-users" style="color: rgb(0, 52, 125); margin-right: 10px;"></i>
-            <span>Team
+            <span>Round {{round}}: {{word}}</span>
                 <span id="char"></span>
                 <span class="state-indicator">
                     <span class="state green"></span>
@@ -46,11 +45,11 @@
             <textarea placeholder="Message from the player..." readonly id="player-message"></textarea>
             <div class="player-info">
                 <p><i class="fas fa-user" style="color: rgb(0, 52, 125);"></i> <strong>Name:</strong> <span
-                        id="player-name">Dodo</span></p>
-                <p><i class="fas fa-star" style="color: rgb(165, 176, 10);"></i> <strong>Score:</strong> <span
-                        id="player-score">1500</span></p>
-                <p><i class="fas fa-heart" style="color: rgb(250, 67, 67);"></i> <strong>Health:</strong> <span
-                        id="player-health">100</span></p>
+                        id="player-name">{{player.name}}</span></p>
+                <p><i class="fas fa-star" style="color: rgb(165, 176, 10);"></i> <strong>Points:</strong> <span
+                        id="player-score">{{player.score}}</span></p>
+                <p><i class="fas fa-heart" style="color: rgb(250, 67, 67);"></i> <strong>Tries:</strong> <span
+                        id="player-health">{{player.health}}</span></p>
             </div>
         </div>
 

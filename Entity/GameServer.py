@@ -2,6 +2,7 @@
 import os
 import sys
 import grpc
+import random
 import asyncio
 import tracemalloc
 import pandas as pd
@@ -63,6 +64,7 @@ class GameServer(Server):
                 if packName.endswith(".csv"):
                     pack = pd.read_csv(f"./Data/{packName}")
                     packs[packName.split(".")[0]] = pack.values.flatten()
+            return packs
         except Exception as e:
             print(Result(False,f"Error loading word packs: {e}"))
             
@@ -229,7 +231,8 @@ class GameServer(Server):
                 ))
             ip = IPDecoder.getIP(context)[0]
             player = self.clients[ip]
-            game = Game(settings= settings )
+            words = self.pickWords(settings)
+            game = Game(settings= settings, words=words) 
             game.addPlayer(player)
             print(f"Game {game.id} created successfully")
             self.resource.sessions.append(game)
@@ -346,6 +349,17 @@ class GameServer(Server):
                 message=f"Error starting game {request.game}: {e}"
             )
         ) 
+            
+    def pickWords(self,settings):
+        num = 8 if settings[0] == 'short' else 16
+        packs = settings[1]
+        words = []
+        while len(words) != num:
+            for pack in settings[1]:
+                if len(words) == num:
+                    break
+                words.append(self.packs[pack][random.randint(0,len(self.packs[pack]))])
+        return words
             
     async def listen(self):
        await asyncio.gather(
