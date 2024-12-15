@@ -77,15 +77,27 @@ async def createGame():
 
 @app.route('/lobby')
 def lobby():
-    global player, game
-    return render_template('lobby.html', player=player, game=game, players=game.players)
+    global game
+    return render_template('lobby.html', game=game, players=game.players)
 
 @app.route('/gameSettings')
 def gameSettings():
     global player
     return render_template('settings.html', player=player)
 
-# async def loadPlayers():
+
+@app.route('/startGame', methods=['GET'])
+async def startGame():
+    global game, player
+    result = await player.startGame(game.id)
+    print(result)
+    if(isinstance(result,dict) and result['result']):
+        game = Game.pbToObject(result['game'])
+        return jsonify({'isSuccess': result['result'].isSuccess, 'message': result['result'].message})
+        if(isinstance(result,Result)):
+            return jsonify({'isSuccess': result.isSuccess, 'message': result.message})
+    
+       
 
 if __name__ == '__main__':
     app.run(debug=True, port=5000)

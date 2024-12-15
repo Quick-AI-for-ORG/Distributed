@@ -18,8 +18,12 @@ class Game:
         for player in pb.players:
             players.append(Player.pbToObject(player))
         teams = {'A': [], 'B': []}
-        teams['A'] = pb.teams[0] if pb.teams[0] else [0,0]
-        teams['B'] = pb.teams[1] if pb.teams[1] else [0,0]
+        try:
+            teams['A'] = pb.teams[0] if len(pb.teams) > 0 and pb.teams[0] else [0, 0]
+            teams['B'] = pb.teams[1] if len(pb.teams) > 1 and pb.teams[1] else [0, 0]
+        except IndexError as e:
+            teams['A'] = [0, 0]
+            teams['B'] = [0, 0]
         return Game(pb.id, players=players, round=pb.rounds, teams=teams, settings=pb.settings, playersInput=pb.playersInput)
     
     def objectToPb(obj):

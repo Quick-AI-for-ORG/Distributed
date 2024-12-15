@@ -136,7 +136,6 @@ class Player:
                         ResultPB.Register(player= Player.objectToPb(self),
                         setting=GamePB.Setting(duration=duration, packs=packs))
                     )
-                    print(result)
                     return result
                 except Exception as e:
                     return Result.objectToPb(Result(
@@ -190,7 +189,28 @@ class Player:
                         message=f"No Game Server provided or found",
                     )
                   
-
+    async def startGame(self, game):
+        if self.gameServer:
+            async with grpc.aio.insecure_channel(self.gameServer) as channel:
+                self.gameServerStub = gameServerRPC.ServerStub(channel)
+                try:
+                    result = await self.gameServerStub.startGame(
+                        ResultPB.Register(player= Player.objectToPb(self),
+                        game= game)
+                    )
+                    return {
+                            "result": Result.pbToObject(result.result),
+                            "game": result.game
+                    }
+                except Exception as e:
+                    return Result(
+                        isSuccess=False,
+                        message=f"Error starting game {self.gameServer}: {e}",
+                    )
+        else: return Result(
+                        isSuccess=False,
+                        message=f"No Game Server provided or found",
+                    )
     async def listen(self):
        await asyncio.gather(
             self.requestServer(),

@@ -1,7 +1,6 @@
 const error = document.getElementById('error-message');
 error.style.display = 'none';
 
-
 const cancelButton = document.querySelector('.cancelButton');
 
 cancelButton.addEventListener('click', async (event) => {
@@ -25,21 +24,32 @@ if (result.isSuccess) {
   }
 });
 
-// async function loadPlayers() {
-//    const response = await fetch('/requestServer', {
-//     method: 'POST',
-//     headers: {
-//         'Content-Type': 'application/json'
-//     },
-//     body: JSON.stringify({ 
-//         playerName: capitalizedPlayerName,
-//         gameSession: gameSessionId
-//     })
-// });
 
 
-//     setTimeout(loadPlayers, 1000);
-// }
+
+async function fetchGameStatus() {
+  const response = await fetch('/startGame', {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+  });
+  const result = await response.json();
+  if (result.isSuccess) {
+    console.log('Success : ' + result.message);
+    error.innerText = 'Game Starting in 3 seconds';
+    error.style.display = 'block';
+    setTimeout(() => {
+      window.location.href = '/game';
+    }, 3000);
+  } else {
+    console.log('Failure : ' + result.message);
+    error.innerText = 'Failure : ' + result.message
+    window.location.href = '/lobby';
+  }
+}
+
+setInterval(fetchGameStatus, 3000);
 
 
-// await loadPlayers();
+

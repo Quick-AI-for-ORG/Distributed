@@ -314,7 +314,39 @@ class GameServer(Server):
             ))
         
     async def startGame(self, request, context):
-        return
+      try:
+            for session in self.resource.sessions:
+                if session.id == request.game:
+                    if session.getAvalableSlots() > 0:
+                      return ResultPB.Response(
+                          result = ResultPB.create(
+                              isSuccess=False,
+                              message=f"Game {request.game} is not full",
+                          ),
+                          game = Game.objectToPb(session)
+                      )
+                    else:
+                      return ResultPB.Response(
+                      result = ResultPB.create(
+                          isSuccess=True,
+                          message=f"Game {request.game} started successfully",
+                      ),
+                      game = Game.objectToPb(session)
+                  )
+            return ResultPB.Response(
+                    result = ResultPB.create(
+                    isSuccess=False,
+                    message=f"Game {request.game} not found",
+                )
+             )  
+      except Exception as e:
+            return ResultPB.Response(
+                result = ResultPB.create(
+                isSuccess=False,
+                message=f"Error starting game {request.game}: {e}"
+            )
+        ) 
+            
     async def listen(self):
        await asyncio.gather(
             self.registerServer(),

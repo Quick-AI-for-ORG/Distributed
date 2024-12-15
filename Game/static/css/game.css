@@ -6,7 +6,8 @@ body {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  background-color: #ddfaff;
+  background-color: #f4f4f4;
+
 }
 
 header.game-title {
@@ -28,17 +29,17 @@ header.game-title h1 {
   border: 1px solid transparent;
   border-radius: 15px;
   padding: 20px;
-  border-color: #00337d;
+  background: #ffffff;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
   text-align: center;
-  color: #333;
-  background-color: #ffffff;
-  font-family: "Arial", sans-serif;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  justify-content: center;
+  align-items: center;
+  display: flex;
+  flex-direction: column;
 }
 
 #container:hover {
-  transform: scale(1.05);
+  transform: scale(1.01);
   box-shadow: 0 12px 25px rgba(0, 0, 0, 0.3);
 }
 
@@ -138,7 +139,7 @@ button i {
 }
 .quit {
   padding: 10px 20px;
-  background-color: #d21515;
+  background-color: #bc1111;;
   color: white;
   border: none;
   border-radius: 5px;
@@ -146,7 +147,7 @@ button i {
 }
 
 .quit:hover {
-  background-color: #8d0c0a;
+  background-color: #911919;
 }
 
 .state-indicator {

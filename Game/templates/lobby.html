@@ -18,6 +18,10 @@
         </h1>
     </header>
     <div id="container">
+        <div class="header">
+            {{game}}
+            <i class="fas fa-gamepad"></i>
+            </div>
         <div class="playerHeader">
             <i class="fas fa-users"></i>
             Players:
@@ -32,10 +36,6 @@
         {%endfor%}
     </div>
         {%endif%}
-        <div class="header">
-            {{game}}
-            <i class="fas fa-gamepad"></i>
-            </div>
         <div class="styled-textarea" contenteditable="false">
             <i class="fas fa-spinner fa-spin"></i> Waiting for other players to join...
         </div>
