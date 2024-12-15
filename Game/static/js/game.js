@@ -17,7 +17,6 @@ const sendUpdate = async () => {
 
     if (result.isSuccess) {
         console.log('Success : ' + result.message);
-        input.value = '';
         area.innerHTML = result.input.join('\n');
     } else {
         console.log('Failure : ' + result.message);
@@ -29,4 +28,5 @@ setInterval(sendUpdate, 2000);
 button.addEventListener('click', async (event) => {
     event.preventDefault();
     await sendUpdate();
+    input.value = '';
 });
