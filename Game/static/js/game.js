@@ -2,7 +2,6 @@ const input = document.querySelector('#game-input');
 const button = document.querySelector('#sendButton');
 const area = document.querySelector('#player-message');
 
-// Send update function
 const sendUpdate = async (inputValue = null) => {
     const response = await fetch('/sendUpdate', {
         method: 'POST',
@@ -10,7 +9,7 @@ const sendUpdate = async (inputValue = null) => {
             'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-            input: inputValue // Send input only if provided, otherwise null
+            input: inputValue 
         })
     });
 
@@ -18,7 +17,7 @@ const sendUpdate = async (inputValue = null) => {
 
     if (result.isSuccess) {
         console.log('Success : ' + result.message);
-        area.innerHTML = result.input.join('\n'); // Update area with new data
+        area.innerHTML = result.input.join('\n');
     } else {
         console.log('Failure : ' + result.message);
     }
@@ -27,11 +26,16 @@ const sendUpdate = async (inputValue = null) => {
 // Button click to send input
 button.addEventListener('click', async (event) => {
     event.preventDefault();
-    await sendUpdate(input.value); // Send the input value when button is clicked
-    input.value = ''; // Clear the input field after sending
+    await sendUpdate(input.value); 
+    input.value = ''; 
 });
 
-// Periodically update the area (loading functionality)
+
+input.addEventListener('keydown', (event) => {
+    if (event.key === 'Enter') {
+        button.click(); // Simulate button click
+    }
+});
 setInterval(() => {
-    sendUpdate(); // Call without input value to act as "loading"
+    sendUpdate(); 
 }, 2000);
