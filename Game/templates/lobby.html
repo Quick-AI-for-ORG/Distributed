@@ -4,8 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lobby</title>
+    <title>OutBurst</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/lobby.css') }}">
+    <link rel="icon" href="{{ url_for('static', filename='images/logo.png') }}" type="image/x-icon">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
 
 </head>
@@ -17,12 +18,33 @@
         </h1>
     </header>
     <div id="container">
+        Host: {{ player.name }}
+        <div class="playerHeader">
+            <i class="fas fa-users"></i>
+            Players:
+            </div>
+           
+            {%if players | length > 1%}
+            <div class="players">
+            {%for other in players%}
+                {% if other.name != player.name%}
+                <div class="player">
+                Player {{other.id}} : {{other.name}}
+            </div>
+                {%endif%}
+        {%endfor%}
+    </div>
+        {%endif%}
+        <div class="header">
+            {{game}}
+            <i class="fas fa-gamepad"></i>
+            </div>
         <div class="styled-textarea" contenteditable="false">
             <i class="fas fa-spinner fa-spin"></i> Waiting for other players to join...
         </div>
+        
     </div>
-
-    </div>
+    <div class='error-message' id='error-message'></div>
 </body>
 
 </html>

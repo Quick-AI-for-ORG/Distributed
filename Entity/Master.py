@@ -65,6 +65,7 @@ class Master(Server):
             if server.getAddress() not in list(self.registeredServers.keys()):
                 self.registeredServers[server.getAddress()] = (server, True)
                 self.loadBalancer.addServer(server.getAddress())
+                self.addSessionToServer(server)
                 message = f"Server {server.getAddress()} registered successfully"
             else:
                 self.registeredServers[server.getAddress()] = (server, True)
@@ -109,7 +110,7 @@ class Master(Server):
                             isSuccess=True,
                             message=f"Server {server.getAddress()} found for game {request.game}",
                         ),
-                        gameServer = GameServer.objectToPb(server),
+                        gameServerAddress = server.getAddress(),
                     )
                 else:
                     return ResultPB.Response(
@@ -119,6 +120,7 @@ class Master(Server):
                         ),
                     )
         except Exception as e:
+            print(e)
             return ResultPB.Response(
                 result = ResultPB.create(
                     isSuccess=False,
@@ -139,7 +141,7 @@ class Master(Server):
                     isSuccess=True,
                     message=f"Server {server.getAddress()} found for player {str(player)}",
                 ),
-                gameServer = GameServer.objectToPb(server),
+                gameServerAddress = server.getAddress(),
             )
 
         except Exception as e: 

@@ -50,17 +50,25 @@ header.game-title h1 {
   align-items: center;
   gap: 10px;
 }
-
+.all{
+  display: flex;
+  gap: 20px;
+  flex-direction: column;
+}
 .settings {
   display: flex;
+  flex-direction: row;
   justify-content: space-between;
   align-items: flex-start;
   gap: 20px;
 }
-
+img{
+  width: 30px;
+}
 .left-section,
 .right-section {
   flex: 1;
+  left: 0%;
 }
 
 .left-section label,
@@ -79,6 +87,9 @@ header.game-title h1 {
 }
 
 .start-game-button {
+  bottom: 0%;
+  width: 100%;
+  display: block;
   padding: 15px 30px;
   font-size: 1.2rem;
   background: #0b5bb1;
@@ -87,8 +98,27 @@ header.game-title h1 {
   border-radius: 10px;
   cursor: pointer;
   text-align: center;
+  width: 100%;
 }
 
 .start-game-button:hover {
   background: #0a498d;
+}
+.error-message {
+  background-color: #e6e6e6;
+  color: rgb(188, 17, 17);
+  padding: 15px;
+  border-radius: 5px;
+  text-align: center;
+  font-weight: bolder;
+  width: 80%;
+  max-width: 400px; /* Limit the width */
+  margin: 20px auto;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); 
+  font-style: italic;
+  display: none;
+}
+
+.error-message:hover{
+  transform: scale(1.1);
 }

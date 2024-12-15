@@ -14,7 +14,7 @@ class Resource:
         if not pb: return None
         sessions = []
         for session in pb.sessions:
-            session.append(Game.pbToObject(session))
+            sessions.append(Game.pbToObject(session))
         
         return Resource(pb.MAX_SESSIONS, sessions)
     

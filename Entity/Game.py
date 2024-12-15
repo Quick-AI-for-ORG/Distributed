@@ -17,8 +17,10 @@ class Game:
         players = []
         for player in pb.players:
             players.append(Player.pbToObject(player))
-        
-        return Game(pb.id, players, pb.rounds, pb.teans, pb.settings, pb.playersInput)
+        teams = {'A': [], 'B': []}
+        teams['A'] = pb.teams[0] if pb.teams[0] else [0,0]
+        teams['B'] = pb.teams[1] if pb.teams[1] else [0,0]
+        return Game(pb.id, players=players, round=pb.rounds, teams=teams, settings=pb.settings, playersInput=pb.playersInput)
     
     def objectToPb(obj):
         players = []
@@ -26,21 +28,21 @@ class Game:
             players.append(Player.objectToPb(player))
             
         teams = []
-        for team in obj.teams:
-            teams.append(pb2.Team(player1=team[0], player2=team[1]))
-        
+        for team in ['A', 'B']:
+            teams.append(pb2.Team(player1=obj.teams[team][0], player2=obj.teams[team][1]))
+
         settings = pb2.Setting(duration=obj.settings[0], packs=obj.settings[1])
           
         return pb2.Game(
             id= obj.id,
             players=players,
-            rounds=obj.rounds,
+            rounds=obj.round,
             teams=teams,
             settings=settings,
             playersInput=obj.playersInput,
         )
     
-    def __init__(self, id=0, players=None, teams=None, currentWord=None, rounds=0, roundTimer=None, settings=None, playersInput=None):
+    def __init__(self, id=0, players=None, teams=None, currentWord=None, round=1, roundTimer=None, settings=None, playersInput=None):
         if not id > 0: 
             Game.count += 1
             self.id = Game.count
@@ -48,12 +50,16 @@ class Game:
             self.id = id
         self.MAX_PLAYERS = 4
         self.players = [] if players is None else players
-        self.teams = {} if teams is None else teams
-        self.rounds = rounds
+        self.teams = {
+            'A': [0,0],
+            'B': [0,0],
+            } if teams is None else teams
+        self.round = round
         self.currentWord = currentWord
         self.roundTimer = roundTimer
-        self.settings = () if settings is None else settings
+        self.settings = ('long', ['commands', 'countries', 'games', 'movies', 'songs']) if settings is None else settings
         self.playersInput = [] if playersInput is None else playersInput
+        self.name = "OutBurst"
        
  
     def getAvalableSlots(self):
@@ -66,16 +72,16 @@ class Game:
                 return True
             
             else:
-                print(f"Game {self.id} : {self.name} already contains player")
+                print(f"Game {self.id} : already contains player")
                 return True
             
         else:
-            print(f"Game {self.id} : {self.name} is full")
+            print(f"Game {self.id} : is full")
             return False
     
     def removePlayer(self, player):
         if self.getAvalableSlots() == self.MAX_PLAYERS:
-             print(f"Game {self.id} : {self.name} is empty")
+             print(f"Game {self.id} : is empty")
              return True
             
         elif player in self.players:
@@ -83,26 +89,26 @@ class Game:
             return True
             
         else:
-            print(f"Game {self.id} : {self.name}  does not contain player {player}")
+            print(f"Game {self.id} :  does not contain player {player}")
             return False
     
     
     def __str__(self):
-        return f"Game {self.id} : {self.name} has {self.getAvalableSlots()} slots available"
+        return f"Game {self.id} : {self.getAvalableSlots()} slots available"
      
-    @staticmethod
-    def canStart(game):
-        if game.getAvalableSlots() == game.MAX_PLAYERS:
-            print(f"Game {game.id} : {game.name} is empty")
-            return False
+    # @staticmethod
+    # def canStart(game):
+    #     if game.getAvalableSlots() == game.MAX_PLAYERS:
+    #         print(f"Game {game.id} : is empty")
+    #         return False
         
-        elif self.getAvalableSlots() > 0:
-            print(f"Game {game.id} : {game.name} is not full")
-            return False
+    #     elif self.getAvalableSlots() > 0:
+    #         print(f"Game {game.id} : is not full")
+    #         return False
         
-        else:
-            print(f"Game {game.id} : {game.name} started")
-            return True
+    #     else:
+    #         print(f"Game {game.id} : started")
+    #         return True
         
     
         

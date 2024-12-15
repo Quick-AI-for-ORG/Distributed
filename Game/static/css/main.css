@@ -61,3 +61,21 @@ button {
 button:hover {
   background-color: #0a498d;
 }
+.error-message {
+  background-color: #e6e6e6;
+  color: rgb(188, 17, 17);
+  padding: 15px;
+  border-radius: 5px;
+  text-align: center;
+  font-weight: bolder;
+  width: 80%;
+  max-width: 400px; /* Limit the width */
+  margin: 20px auto;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); 
+  font-style: italic;
+  display: none;
+}
+
+.error-message:hover{
+  transform: scale(1.1);
+}

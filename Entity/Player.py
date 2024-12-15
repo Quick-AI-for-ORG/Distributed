@@ -20,6 +20,7 @@ import Service.ClientService_pb2_grpc as playerRPC
 from Entity.Result import Result
 
 """Import Protocol Buffers as __PB"""
+import Buffer.Game_pb2 as GamePB
 import Buffer.Result_pb2 as ResultPB
 import Buffer.Player_pb2 as PlayerPB
 import Buffer.GameServer_pb2 as GameServerPB
@@ -54,19 +55,20 @@ class Player:
     def __str__(self):
         return f"Player {self.id} : {self.name} with {self.health} health and {self.score} score"
 
-    async def connectPlayer(self):
-        if self.gameServer:
+    async def connectPlayer(self, gameServer=None):
+        if gameServer:
+            self.gameServer = gameServer
             async with grpc.aio.insecure_channel(self.gameServer) as channel:
                 self.gameServerStub = gameServerRPC.ServerStub(channel)
                 try:
                     result = await self.gameServerStub.connectPlayer(Player.objectToPb(self))
-                    print(Result.pbToObject(result))
+                    return(Result.pbToObject(result))
                 except Exception as e:
-                    print(Result(
+                    return(Result(
                         isSuccess=False,
                         message=f"Error connecting to Game Server {self.gameServer}: {e}",
                     ))
-        else: print(Result(
+        else: return(Result(
                         isSuccess=False,
                         message=f"No Game Server provided or found",
                     ))
@@ -106,22 +108,81 @@ class Player:
                         )
                     )
                 try: 
-                    self.gameServer = f"{result.gameServer.ip}:{result.gameServer.port}"
+                    self.gameServer = result.gameServerAddress
                     return result
                 except Exception as e:
                     result = Result(
                         isSuccess=False,
                         message=f"Invalid Game Server data recieved: {e}",
                     )
-                    print(result)
                     return Result.objectToPb(result)
             except Exception as e:
                   result =Result(
                     isSuccess=False,
                     message=f"Error connecting to Master: {e}",
                     )
-                  print(result)
                   return Result.objectToPb(result)
+              
+    async def createGame(self, packs, duration):
+        if self.gameServer:
+            async with grpc.aio.insecure_channel(self.gameServer) as channel:
+                self.gameServerStub = gameServerRPC.ServerStub(channel)
+                try:
+                    result = await self.gameServerStub.createGame(
+                        GamePB.Setting(duration=duration, packs=packs)
+                    )
+                    print(result)
+                    return result
+                except Exception as e:
+                    return Result.objectToPb(Result(
+                        isSuccess=False,
+                        message=f"Error creating game {self.gameServer}: {e}",
+                    ))
+                    
+        else: return Result.objectToPb(Result(
+                        isSuccess=False,
+                        message=f"No Game Server provided or found",
+                    ))
+        
+    async def connectToGame(self, gameServer, gameSession):
+        if gameServer:
+            self.gameServer = gameServer
+            self.gameSession = gameSession
+            async with grpc.aio.insecure_channel(self.gameServer) as channel:
+                self.gameServerStub = gameServerRPC.ServerStub(channel)
+                try:
+                    try:
+                        pb =  ResultPB.Register(player= Player.objectToPb(self),
+                                            game= gameSession) 
+                    except Exception as e:
+                        return Result(
+                            isSuccess=False,
+                            message=f"Invalid Game Server data recieved: {e}",
+                        )
+                    try:    
+                        result = await self.gameServerStub.connectToGame(pb)
+                        if (result.result.isSuccess): return {
+                            "result": Result.pbToObject(result.result),
+                            "game": result.game
+                        }
+                        else: return Result(
+                            isSuccess=result.result.isSuccess,
+                            message=result.result.message,
+                        )
+                    except Exception as e:
+                        return Result(
+                            isSuccess=False,
+                            message=f"Error connecting to Game Server {self.gameServer}: {e}",
+                        )
+                except Exception as e:
+                    return Result(
+                        isSuccess=False,
+                        message=f"Error connecting to Game Server {self.gameServer}: {e}",
+                    )
+        else: return Result(
+                        isSuccess=False,
+                        message=f"No Game Server provided or found",
+                    )
                   
 
     async def listen(self):

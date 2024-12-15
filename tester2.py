@@ -7,13 +7,11 @@ sys.path.append(os.path.dirname("Entity"))
 
 from Entity.Master import Master
 from Entity.GameServer import GameServer
+from Entity.Player import Player
+from Entity.Game import Game
 
-        
 
 
-server2 = GameServer()
-# server2.listen()
-async def main():
-    await asyncio.gather(server2.listen())
+
     
-asyncio.run(main())
+asyncio.run(server1.listen())

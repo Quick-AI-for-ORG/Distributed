@@ -33,14 +33,50 @@ header.game-title h1 {
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
   font-family: "Arial", sans-serif;
   text-align: center;
+  justify-content: center;
+  align-items: center;
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 30px;
 }
 
 #container:hover {
-  transform: scale(1.05);
+  transform: scale(1.01);
   box-shadow: 0 12px 25px rgba(0, 0, 0, 0.3);
+}
+.players {
+  width: 50%;;
+  background-color: #f9f9f9; /* Light gray background */
+  border: 1px solid #ddd; /* Subtle border */
+  border-radius: 8px; /* Rounded corners */
+  padding: 15px; /* Inner spacing */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Add a shadow for depth */
+  text-align: center;
+}
+
+.playerHeader {
+  font-weight: bolder;
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+}
+
+.playerHeader i {
+  margin:2%
+}
+
+.player {
+  color: #555; /* Medium gray text */
+  padding: 8px 0;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+
+
+.player:hover {
+  background-color: #f1f1f1; /* Highlight player on hover */
+  cursor: pointer; /* Indicate interactivity */
 }
 
 textarea {
@@ -74,4 +110,22 @@ textarea[readonly] {
 .icon-container i {
   font-size: 40px;
   color: #007bff;
+}
+.error-message {
+  background-color: #e6e6e6;
+  color: rgb(188, 17, 17);
+  padding: 15px;
+  border-radius: 5px;
+  text-align: center;
+  font-weight: bolder;
+  width: 80%;
+  max-width: 400px; /* Limit the width */
+  margin: 20px auto;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); 
+  font-style: italic;
+  display: none;
+}
+
+.error-message:hover{
+  transform: scale(1.1);
 }

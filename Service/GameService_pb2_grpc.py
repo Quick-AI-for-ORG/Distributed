@@ -12,6 +12,7 @@ import Buffer.Game_pb2 as Game__pb2
 import Buffer.Player_pb2 as Player__pb2
 import Buffer.Result_pb2 as Result__pb2
 
+
 GRPC_GENERATED_VERSION = '1.68.0'
 GRPC_VERSION = grpc.__version__
 _version_not_supported = False
@@ -64,12 +65,12 @@ class ServerStub(object):
         self.createGame = channel.unary_unary(
                 '/distributed.Server/createGame',
                 request_serializer=Game__pb2.Setting.SerializeToString,
-                response_deserializer=Result__pb2.Result.FromString,
+                response_deserializer=Result__pb2.Response.FromString,
                 _registered_method=True)
         self.connectToGame = channel.unary_unary(
                 '/distributed.Server/connectToGame',
                 request_serializer=Result__pb2.Register.SerializeToString,
-                response_deserializer=Game__pb2.Game.FromString,
+                response_deserializer=Result__pb2.Response.FromString,
                 _registered_method=True)
 
 
@@ -138,12 +139,12 @@ def add_ServerServicer_to_server(servicer, server):
             'createGame': grpc.unary_unary_rpc_method_handler(
                     servicer.createGame,
                     request_deserializer=Game__pb2.Setting.FromString,
-                    response_serializer=Result__pb2.Result.SerializeToString,
+                    response_serializer=Result__pb2.Response.SerializeToString,
             ),
             'connectToGame': grpc.unary_unary_rpc_method_handler(
                     servicer.connectToGame,
                     request_deserializer=Result__pb2.Register.FromString,
-                    response_serializer=Game__pb2.Game.SerializeToString,
+                    response_serializer=Result__pb2.Response.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -280,7 +281,7 @@ class Server(object):
             target,
             '/distributed.Server/createGame',
             Game__pb2.Setting.SerializeToString,
-            Result__pb2.Result.FromString,
+            Result__pb2.Response.FromString,
             options,
             channel_credentials,
             insecure,
@@ -307,7 +308,7 @@ class Server(object):
             target,
             '/distributed.Server/connectToGame',
             Result__pb2.Register.SerializeToString,
-            Game__pb2.Game.FromString,
+            Result__pb2.Response.FromString,
             options,
             channel_credentials,
             insecure,

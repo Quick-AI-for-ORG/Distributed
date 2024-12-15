@@ -4,8 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Game Settings</title>
+    <title>OutBurst</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/settings.css') }}">
+    <link rel="icon" href="{{ url_for('static', filename='images/logo.png') }}" type="image/x-icon">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
 
 </head>
@@ -14,54 +15,62 @@
     <header class="game-title">
         <h1>OutBurst <i class="fas fa-bolt" style="color: rgb(255, 165, 0);"></i></h1>
     </header>
-    <div id="container">
+    <form id="container">
+        Host: {{ player.name }} 
         <div class="header">
             <i class="fas fa-cogs"></i>
             Game Settings
         </div>
-        <div class="settings">
+        <div class="all">
+        <div class="settings" id="settingsForm" method="post">
             <div class="left-section">
+                <h3>Word Packs</h3>
                 <label>
-                    <input type="checkbox" />
-                    <i class="fas fa-film"></i> Movies
+                    <input type="checkbox" name="word_packs" value="movies" />
+                    <img src="{{ url_for('static', filename='images/movies.png') }}" alt="Film Titles Pack">
+                    Movies
                 </label>
                 <label>
-                    <input type="checkbox" />
-                    <i class="fas fa-music"></i> Songs
+                    <input type="checkbox" name="word_packs" value="songs" />
+                    <img src="{{ url_for('static', filename='images/songs.png') }}" alt="Song Titles Packs">
+                    Songs
                 </label>
                 <label>
-                    <input type="checkbox" />
-                    <i class="fas fa-globe"></i> Countries
+                    <input type="checkbox" name="word_packs" value="countries" />
+                    <img src="{{ url_for('static', filename='images/countries.png') }}" alt="Country Names Pack">
+                    Countries
                 </label>
                 <label>
-                    <input type="checkbox" />
-                    <i class="fas fa-gamepad"></i> Video Games
+                    <input type="checkbox" name="word_packs" value="games" />
+                    <img src="{{ url_for('static', filename='images/games.png') }}" alt="Video Games Pack">
+                    Video Games
                 </label>
                 <label>
-                    <input type="checkbox" />
-                    <i class="fas fa-terminal"></i> Linux Commands
-                </label>
-                <label>
-                    <input type="checkbox" />
-                    <i class="fas fa-utensils"></i> Food/Restaurants
+                    <input type="checkbox" name="word_packs" value="commands" />
+                    <img src="{{ url_for('static', filename='images/commands.png') }}" alt="Linux Commands Pack">
+                    Linux Commands
                 </label>
             </div>
             <div class="right-section">
                 <h3>Duration</h3>
                 <label>
-                    <input type="radio" name="duration" />
+                    <input type="radio" name="duration" value="long" required/>
                     <i class="fas fa-hourglass-half"></i> Long
                 </label>
                 <label>
-                    <input type="radio" name="duration" />
+                    <input type="radio" name="duration" value="short" required/>
                     <i class="fas fa-hourglass-start"></i> Short
-                </label>
-            </div>
-        </div>
-        <button class="start-game-button">
-            <i class="fas fa-play"></i> Start Game
-        </button>
+                </label>           
+       </div>
+       
     </div>
+    <button type='submit' class="start-game-button">
+        <i class="fas fa-play"></i> Start Game
+    </button>
+    </div>
+    </form>
+    <div class='error-message' id='error-message'></div>
+    <script src="{{ url_for('static', filename='js/settings.js') }}"></script>
 </body>
 
 </html>

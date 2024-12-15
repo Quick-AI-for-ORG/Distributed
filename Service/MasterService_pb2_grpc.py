@@ -3,7 +3,6 @@
 import grpc
 import warnings
 
-
 import os
 import sys
 sys.path.append(os.path.dirname("Buffer"))
@@ -51,6 +50,23 @@ class MasterStub(object):
                 response_deserializer=Result__pb2.Response.FromString,
                 _registered_method=True)
 
+
+class MasterServicer(object):
+    """Missing associated documentation comment in .proto file."""
+
+    def registerServer(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def requestServer(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+
 def add_MasterServicer_to_server(servicer, server):
     rpc_method_handlers = {
             'registerServer': grpc.unary_unary_rpc_method_handler(
@@ -69,3 +85,61 @@ def add_MasterServicer_to_server(servicer, server):
     server.add_generic_rpc_handlers((generic_handler,))
     server.add_registered_method_handlers('distributed.Master', rpc_method_handlers)
 
+
+ # This class is part of an EXPERIMENTAL API.
+class Master(object):
+    """Missing associated documentation comment in .proto file."""
+
+    @staticmethod
+    def registerServer(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/distributed.Master/registerServer',
+            GameServer__pb2.GameServer.SerializeToString,
+            Result__pb2.Result.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def requestServer(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/distributed.Master/requestServer',
+            Result__pb2.Register.SerializeToString,
+            Result__pb2.Response.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
