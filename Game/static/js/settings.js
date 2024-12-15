@@ -6,6 +6,29 @@ let radios = document.querySelectorAll('input[type="radio"]');
 
 
 const form = document.querySelector('form');
+const cancelButton = document.querySelector('.cancelButton');
+
+cancelButton.addEventListener('click', async (event) => {
+  event.preventDefault();
+  const response = await fetch('/disconnectPlayer', {
+    method: 'GET',
+    headers: {
+        'Content-Type': 'application/json',
+    }
+})
+    
+const result = await response.json();
+
+if (result.isSuccess) {
+    console.log('Success : ' + result.message);
+    window.location.href = '/';
+} else {
+    console.log('Failure : ' + result.message);
+    error.innerText = 'Failure : ' + result.message
+    error.style.display = 'block';
+  }
+});
+
 form.addEventListener('submit', async (event) => {
     event.preventDefault();
 

@@ -129,3 +129,23 @@ textarea[readonly] {
 .error-message:hover{
   transform: scale(1.1);
 }
+*::-webkit-scrollbar {
+  display: none; 
+}
+.cancelButton {
+  bottom: 0%;
+  width: 100%;
+  display: block;
+  padding: 15px 30px;
+  font-size: 1.2rem;
+  background-color:#bc1111;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  text-align: center;
+  width: 100%;
+}
+.cancelButton:hover{
+  background-color:#911919
+}

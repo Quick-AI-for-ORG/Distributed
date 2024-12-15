@@ -13,6 +13,7 @@ message Result {
 message Register {
     Player player = 1;
     int32 game = 2;
+    Setting setting = 3;
 }
 
 message Response {

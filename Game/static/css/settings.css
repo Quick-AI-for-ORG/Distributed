@@ -1,7 +1,6 @@
 body {
   margin: 0;
   padding: 0;
-  height: 100vh;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -89,7 +88,7 @@ img{
   cursor: pointer;
 }
 
-.start-game-button {
+.start-game-button, .cancelButton {
   bottom: 0%;
   width: 100%;
   display: block;
@@ -102,6 +101,12 @@ img{
   cursor: pointer;
   text-align: center;
   width: 100%;
+}
+.cancelButton{
+  background-color:#bc1111
+}
+.cancelButton:hover{
+  background-color:#911919
 }
 
 .start-game-button:hover {
@@ -131,4 +136,7 @@ img{
 }
 .error-message:hover{
   transform: scale(1.1);
+}
+*::-webkit-scrollbar {
+  display: none; 
 }

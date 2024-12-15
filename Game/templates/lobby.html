@@ -18,20 +18,17 @@
         </h1>
     </header>
     <div id="container">
-        Host: {{ player.name }}
         <div class="playerHeader">
             <i class="fas fa-users"></i>
             Players:
             </div>
            
-            {%if players | length > 1%}
+            {%if players | length >= 1%}
             <div class="players">
             {%for other in players%}
-                {% if other.name != player.name%}
                 <div class="player">
                 Player {{other.id}} : {{other.name}}
             </div>
-                {%endif%}
         {%endfor%}
     </div>
         {%endif%}
@@ -42,9 +39,10 @@
         <div class="styled-textarea" contenteditable="false">
             <i class="fas fa-spinner fa-spin"></i> Waiting for other players to join...
         </div>
-        
+        <button  class="cancelButton"type="button" id="cancleButton"><i class="fas fa-times"></i> Cancel</button>
     </div>
     <div class='error-message' id='error-message'></div>
+    <script src="{{ url_for('static', filename='js/lobby.js') }}"></script>
 </body>
 
 </html>

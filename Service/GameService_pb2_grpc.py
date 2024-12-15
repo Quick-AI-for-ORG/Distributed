@@ -3,6 +3,7 @@
 import grpc
 import warnings
 
+
 import os
 import sys
 sys.path.append(os.path.dirname("Buffer"))
@@ -11,7 +12,6 @@ import Buffer.GameServer_pb2 as GameServer__pb2
 import Buffer.Game_pb2 as Game__pb2
 import Buffer.Player_pb2 as Player__pb2
 import Buffer.Result_pb2 as Result__pb2
-
 
 GRPC_GENERATED_VERSION = '1.68.0'
 GRPC_VERSION = grpc.__version__
@@ -64,11 +64,16 @@ class ServerStub(object):
                 _registered_method=True)
         self.createGame = channel.unary_unary(
                 '/distributed.Server/createGame',
-                request_serializer=Game__pb2.Setting.SerializeToString,
+                request_serializer=Result__pb2.Register.SerializeToString,
                 response_deserializer=Result__pb2.Response.FromString,
                 _registered_method=True)
         self.connectToGame = channel.unary_unary(
                 '/distributed.Server/connectToGame',
+                request_serializer=Result__pb2.Register.SerializeToString,
+                response_deserializer=Result__pb2.Response.FromString,
+                _registered_method=True)
+        self.startGame = channel.unary_unary(
+                '/distributed.Server/startGame',
                 request_serializer=Result__pb2.Register.SerializeToString,
                 response_deserializer=Result__pb2.Response.FromString,
                 _registered_method=True)
@@ -113,6 +118,12 @@ class ServerServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def startGame(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
 
 def add_ServerServicer_to_server(servicer, server):
     rpc_method_handlers = {
@@ -138,11 +149,16 @@ def add_ServerServicer_to_server(servicer, server):
             ),
             'createGame': grpc.unary_unary_rpc_method_handler(
                     servicer.createGame,
-                    request_deserializer=Game__pb2.Setting.FromString,
+                    request_deserializer=Result__pb2.Register.FromString,
                     response_serializer=Result__pb2.Response.SerializeToString,
             ),
             'connectToGame': grpc.unary_unary_rpc_method_handler(
                     servicer.connectToGame,
+                    request_deserializer=Result__pb2.Register.FromString,
+                    response_serializer=Result__pb2.Response.SerializeToString,
+            ),
+            'startGame': grpc.unary_unary_rpc_method_handler(
+                    servicer.startGame,
                     request_deserializer=Result__pb2.Register.FromString,
                     response_serializer=Result__pb2.Response.SerializeToString,
             ),
@@ -280,7 +296,7 @@ class Server(object):
             request,
             target,
             '/distributed.Server/createGame',
-            Game__pb2.Setting.SerializeToString,
+            Result__pb2.Register.SerializeToString,
             Result__pb2.Response.FromString,
             options,
             channel_credentials,
@@ -307,6 +323,33 @@ class Server(object):
             request,
             target,
             '/distributed.Server/connectToGame',
+            Result__pb2.Register.SerializeToString,
+            Result__pb2.Response.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def startGame(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/distributed.Server/startGame',
             Result__pb2.Register.SerializeToString,
             Result__pb2.Response.FromString,
             options,

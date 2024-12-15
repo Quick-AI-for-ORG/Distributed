@@ -38,6 +38,7 @@ class Player:
             health=obj.health,
             score=obj.score,
         )
+        
     
     def __init__(self, id=0, name="Player", health=3, score=0, master=None, gameServer=None, gameSession=None):
         if not id > 0: 
@@ -54,7 +55,10 @@ class Player:
 
     def __str__(self):
         return f"Player {self.id} : {self.name} with {self.health} health and {self.score} score"
-
+    
+    def changeName(self,name):
+        self.name = name
+        
     async def connectPlayer(self, gameServer=None):
         if gameServer:
             self.gameServer = gameServer
@@ -79,13 +83,13 @@ class Player:
                 self.gameServerStub = gameServerRPC.ServerStub(channel)
                 try:
                     result = await self.gameServerStub.disconnectPlayer(Player.objectToPb(self))
-                    print(Result.pbToObject(result))
+                    return Result.pbToObject(result)
                 except Exception as e:
-                    print(Result(
+                    return(Result(
                         isSuccess=False,
                         message=f"Error connecting to Game Server {self.gameServer}: {e}",
                     ))
-        else: print(Result(
+        else: return(Result(
                         isSuccess=False,
                         message=f"No Game Server provided or found",
                     ))
@@ -129,7 +133,8 @@ class Player:
                 self.gameServerStub = gameServerRPC.ServerStub(channel)
                 try:
                     result = await self.gameServerStub.createGame(
-                        GamePB.Setting(duration=duration, packs=packs)
+                        ResultPB.Register(player= Player.objectToPb(self),
+                        setting=GamePB.Setting(duration=duration, packs=packs))
                     )
                     print(result)
                     return result
@@ -144,7 +149,9 @@ class Player:
                         message=f"No Game Server provided or found",
                     ))
         
-    async def connectToGame(self, gameServer, gameSession):
+    async def connectToGame(self,name, gameServer, gameSession):
+        self.changeName(name)
+        print(str(self))
         if gameServer:
             self.gameServer = gameServer
             self.gameSession = gameSession

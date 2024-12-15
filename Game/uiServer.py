@@ -32,7 +32,7 @@ def game():
 @app.route('/requestServer', methods=['POST'])
 async def requestServer():
     global player, gameServer, players, game
-    player = Player(name=request.json.get('playerName'))
+    player = Player(name=request.json.get('playerName'),master='192.168.1.44:7777')
     players.append(player)
     gameSession = int(request.json.get('gameSession')) if request.json.get('gameSession') else None
     result = await player.requestServer(gameSession)
@@ -44,7 +44,7 @@ async def requestServer():
             return jsonify({'isSuccess': result.isSuccess, 'message': result.message})
         
         elif gameSession is not None:
-            result = await player.connectToGame(result.gameServerAddress, gameSession)
+            result = await player.connectToGame(request.json.get('playerName'),result.gameServerAddress, gameSession)
             if(isinstance(result,dict) and result['result']):
                 if(result['result'].isSuccess): game = Game.pbToObject(result['game'])
                 return jsonify({'isSuccess': result['result'].isSuccess, 'message': result['result'].message})
@@ -56,7 +56,11 @@ async def requestServer():
 
     
 
-       
+@app.route('/disconnectPlayer', methods=['GET'])
+async def disconnectPlayer():
+    global player
+    result = await player.disconnectPlayer()
+    return jsonify({'isSuccess': result.isSuccess, 'message': result.message})
 
 
 @app.route('/createGame', methods=['POST'])

@@ -70,7 +70,7 @@ class Master(Server):
             else:
                 self.registeredServers[server.getAddress()] = (server, True)
                 self.addSessionToServer(server)
-                message = f"Server {server.getAddress()} already registered"
+                message = f"Server {server.getAddress()} updated successfully"
             
             return ResultPB.create(
                 isSuccess=True,

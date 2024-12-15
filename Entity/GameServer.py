@@ -83,11 +83,13 @@ class GameServer(Server):
             try:
                 result = await self.masterStub.registerServer(GameServer.objectToPb(self))
                 print(Result.pbToObject(result))
+                return result
             except Exception as e:
                 print( Result(
                     isSuccess=False,
                     message=f"Error connecting to Master: {e}",
                 ))
+                return Result(isSuccess=False, message=f"Error connecting to Master: {e}")
             
     async def connectPlayer(self, request, context):
         try:
@@ -214,22 +216,31 @@ class GameServer(Server):
             
     async def createGame(self, request, context):
        try:
-            settings = (request.duration, request.packs)
+            settings = (request.setting.duration, request.setting.packs)
             if not settings:
                 return ResultPB.Response(result=ResultPB.create(
                     isSuccess=False,
                     message="Invalid Game Settings"
                 ))
-            player = self.clients[IPDecoder.getIP(context)[0]]
+            ip = IPDecoder.getIP(context)[0]
+            player = self.clients[ip]
             game = Game(settings= settings )
             game.addPlayer(player)
             print(f"Game {game.id} created successfully")
             self.resource.sessions.append(game)
-            return ResultPB.Response(result=ResultPB.create(
-                isSuccess=True,
-                message=f"Game {game.id} created successfully"
-                ), game=Game.objectToPb(game))
-            
+            try:
+                result = await self.registerServer()
+                return ResultPB.Response(result=ResultPB.create(
+                    isSuccess=True,
+                    message=f"Game {game.id} created successfully"
+                    ), game=Game.objectToPb(game))
+                
+            except Exception as e:
+                return ResultPB.Response(result=ResultPB.create(
+                    isSuccess=False,
+                    message=f"Error creating game: {e}"
+                ))
+                
        except Exception as e:
             return ResultPB.Response(result=ResultPB.create(
                 isSuccess=False,
@@ -255,18 +266,25 @@ class GameServer(Server):
             for session in self.resource.sessions:
                 if session.id == request.game:
                     ip = IPDecoder.getIP(context)[0]
-                    if ip not in list(self.clients.keys()):
-                        self.clients[ip]= player
-                    
+                    self.clients[ip]= player
                     if session.getAvalableSlots() > 0:
                         session.addPlayer(self.clients[ip])
-                        return ResultPB.Response(
-                            result = ResultPB.create(
-                                isSuccess=True,
-                                message=f"Connected to {request.game} successfully",
-                        ),
-                            game = Game.objectToPb(session)
-                )
+                        try:
+                            result = await self.registerServer()
+                            return ResultPB.Response(
+                                result = ResultPB.create(
+                                    isSuccess=True,
+                                    message=f"Connected to {request.game} successfully",
+                            ),
+                                game = Game.objectToPb(session)
+                            )
+                        except Exception as e:
+                            print(f"Error updating: {e}")
+                            return ResultPB.Response(
+                                result = ResultPB.create(
+                                    isSuccess=False,
+                                    message=f"Error connecting to game {request.game}: {e}",
+                            ))
                     else:
                         return ResultPB.Response(
                             result = ResultPB.create(
@@ -288,6 +306,8 @@ class GameServer(Server):
                 message=f"Error connecting to game {request.game}: {e}"
             ))
         
+    async def startGame(self, request, context):
+        return
     async def listen(self):
        await asyncio.gather(
             self.registerServer(),
