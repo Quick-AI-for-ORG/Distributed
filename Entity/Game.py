@@ -18,7 +18,7 @@ class Game:
         for player in pb.players:
             players.append(Player.pbToObject(player))
 
-        return Game(pb.id, players=players, round=pb.rounds, settings=pb.settings, playersInput=pb.playersInput, words=pb.words.words)
+        return Game(pb.id, players=players, round=pb.rounds, settings=pb.settings, playersInput=pb.playersInput, words=pb.words.words, clueGiver=pb.clueGiver)
     
     def objectToPb(obj):
         players = []
@@ -33,9 +33,10 @@ class Game:
             settings=settings,
             playersInput=obj.playersInput,
             words=pb2.Word(words=obj.words),
+            clueGiver=obj.clueGiver
         )
     
-    def __init__(self, id=0, players=None, teams=None, currentWord=None, round=1, settings=None, playersInput=None, words=[]):
+    def __init__(self, id=0, players=None, teams=None, currentWord=None, round=1, settings=None, playersInput=None, words=[], clueGiver=None):
         if not id > 0: 
             Game.count += 1
             self.id = Game.count
@@ -49,6 +50,7 @@ class Game:
         self.playersInput = [] if playersInput is None else playersInput
         self.name = "OutBurst"
         self.words = words
+        self.clueGiver = clueGiver
        
  
     def getAvalableSlots(self):
@@ -56,6 +58,14 @@ class Game:
     
     def loadWordPacks(self, words):
         self.words = words
+        
+    def addInput(self,string):
+        self.playersInput.append(string)
+        return self.playersInput
+    
+    def clearInput(self):
+        self.playersInput = []
+        return self.playersInput
         
     def addPlayer(self, player):
         if self.getAvalableSlots() > 0:
@@ -88,19 +98,4 @@ class Game:
     def __str__(self):
         return f"Game {self.id} : {self.getAvalableSlots()} slots available"
      
-    # @staticmethod
-    # def canStart(game):
-    #     if game.getAvalableSlots() == game.MAX_PLAYERS:
-    #         print(f"Game {game.id} : is empty")
-    #         return False
-        
-    #     elif self.getAvalableSlots() > 0:
-    #         print(f"Game {game.id} : is not full")
-    #         return False
-        
-    #     else:
-    #         print(f"Game {game.id} : started")
-    #         return True
-        
-    
         

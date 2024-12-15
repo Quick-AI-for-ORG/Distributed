@@ -14,6 +14,8 @@ message Register {
     Player player = 1;
     int32 game = 2;
     Setting setting = 3;
+    Context context = 4;
+    string update = 5;
 }
 
 message Response {
@@ -22,6 +24,7 @@ message Response {
     Game game = 3;
     string gameServerAddress = 4;
     Word words = 5;
-    
+    Context context = 6;
+    string update = 7;
 }
 

@@ -211,6 +211,29 @@ class Player:
                         isSuccess=False,
                         message=f"No Game Server provided or found",
                     )
+        
+    async def sendUpdate(self,input, gameSession):
+        if self.gameServer:
+            async with grpc.aio.insecure_channel(self.gameServer) as channel:
+                self.gameServerStub = gameServerRPC.ServerStub(channel)
+                try:
+                    result = await self.gameServerStub.sendUpdate(
+                        ResultPB.Register(game=gameSession ,
+                        update= input)
+                    )
+                    return {
+                            "result": Result.pbToObject(result.result),
+                            "game": result.game
+                    }
+                except Exception as e:
+                    return Result(
+                        isSuccess=False,
+                        message=f"Error sending update to game {self.gameServer}: {e}",
+                    )
+        else: return Result(
+                        isSuccess=False,
+                        message=f"No Game Server provided or found",
+                    )
     async def listen(self):
        await asyncio.gather(
             self.requestServer(),

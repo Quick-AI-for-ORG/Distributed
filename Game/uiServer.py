@@ -98,6 +98,19 @@ async def startGame():
             return jsonify({'isSuccess': result.isSuccess, 'message': result.message})
     
        
-
+@app.route('/sendUpdate', methods=['POST'])
+async def addInput():
+    global player, game
+    result = await player.sendUpdate(request.json.get('input'), game.id)
+    if(isinstance(result,dict) and result['result']):
+        game = Game.pbToObject(result['game'])
+        return jsonify({
+            'isSuccess': result['result'].isSuccess, 
+            'message': result['result'].message, 
+            'input' :list(game.playersInput)
+            })
+    if(isinstance(result,Result)):
+        return jsonify({'isSuccess': result.isSuccess, 'message': result.message})
+    
 if __name__ == '__main__':
     app.run(debug=True, port=5000)
