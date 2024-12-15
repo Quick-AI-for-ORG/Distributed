@@ -2,8 +2,7 @@ const input = document.querySelector('#game-input')
 const button = document.querySelector('#sendButton')
 const area = document.querySelector('#player-message')
 
-button.addEventListener('click', async (event) => {
-    event.preventDefault();
+const sendUpdate = async () => {
     const response = await fetch('/sendUpdate', {
         method: 'POST',
         headers: {
@@ -23,4 +22,11 @@ button.addEventListener('click', async (event) => {
     } else {
         console.log('Failure : ' + result.message);
     }
-})
+};
+
+// Call the function every 2 seconds
+setInterval(sendUpdate, 2000);
+button.addEventListener('click', async (event) => {
+    event.preventDefault();
+    await sendUpdate();
+});

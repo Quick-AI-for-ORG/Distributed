@@ -198,7 +198,7 @@ class GameServer(Server):
             for session in self.resource.sessions:
                 if session.id == request.game:
                     player = self.clients[IPDecoder.getIP(context)[0]]
-                    session.addInput(f"{player.name}: {request.update}")
+                    if request.update != "": session.addInput(f"{player.name}: {request.update}")
                     return ResultPB.Response(
                         result = ResultPB.create(
                             isSuccess=True,
