@@ -266,6 +266,7 @@ class GameServer(Server):
             for session in self.resource.sessions:
                 if session.id == request.game:
                     ip = IPDecoder.getIP(context)[0]
+                    session.removePlayer(self.clients[ip])
                     self.clients[ip]= player
                     if session.getAvalableSlots() > 0:
                         session.addPlayer(self.clients[ip])
