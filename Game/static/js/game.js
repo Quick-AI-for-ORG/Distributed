@@ -9,7 +9,7 @@ const sendUpdate = async () => {
             'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-            input: input.value
+            input:""
         })
     });
 
