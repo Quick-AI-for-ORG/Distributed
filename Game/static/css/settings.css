@@ -38,7 +38,7 @@ header.game-title h1 {
 }
 
 #container:hover {
-  transform: scale(1.05);
+  transform: scale(1.02);
   box-shadow: 0 12px 25px rgba(0, 0, 0, 0.3);
 }
 
@@ -58,8 +58,9 @@ header.game-title h1 {
 .settings {
   display: flex;
   flex-direction: row;
-  justify-content: space-between;
+  justify-content: center;
   align-items: flex-start;
+  align-items: center;
   gap: 20px;
 }
 img{
@@ -70,7 +71,9 @@ img{
   flex: 1;
   left: 0%;
 }
-
+.left-section label:hover,.right-section label:hover{
+  transform: translateX(5px);
+}
 .left-section label,
 .right-section label {
   display: flex;
@@ -118,7 +121,14 @@ img{
   font-style: italic;
   display: none;
 }
-
+.host{
+  display: flex;
+  flex-direction: row;
+  gap:5px;
+}
+.host span{
+  font-style: italic;
+}
 .error-message:hover{
   transform: scale(1.1);
 }

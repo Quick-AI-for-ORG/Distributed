@@ -16,15 +16,17 @@
         <h1>OutBurst <i class="fas fa-bolt" style="color: rgb(255, 165, 0);"></i></h1>
     </header>
     <form id="container">
-        Host: {{ player.name }} 
+        <div class="host">
+            Host: <span> {{ player.name }} </span>
+        </div>
         <div class="header">
             <i class="fas fa-cogs"></i>
             Game Settings
         </div>
         <div class="all">
         <div class="settings" id="settingsForm" method="post">
-            <div class="left-section">
-                <h3>Word Packs</h3>
+            <div class="left-section" title="Choose a word pack">
+                <h3>Word Packs: </h3>
                 <label>
                     <input type="checkbox" name="word_packs" value="movies" />
                     <img src="{{ url_for('static', filename='images/movies.png') }}" alt="Film Titles Pack">
@@ -51,21 +53,23 @@
                     Linux Commands
                 </label>
             </div>
-            <div class="right-section">
-                <h3>Duration</h3>
+            <div class="right-section" title="Choose the round duration">
+                <h3>Round Duration: </h3>
                 <label>
                     <input type="radio" name="duration" value="long" required/>
-                    <i class="fas fa-hourglass-half"></i> Long
+                    <img src="{{ url_for('static', filename='images/short.png') }}" alt="Short Round Duration"> 
+                    Short
                 </label>
                 <label>
                     <input type="radio" name="duration" value="short" required/>
-                    <i class="fas fa-hourglass-start"></i> Short
+                    <img src="{{ url_for('static', filename='images/long.png') }}" alt="Long Round Duration"> 
+                    Long
                 </label>           
        </div>
        
     </div>
     <button type='submit' class="start-game-button">
-        <i class="fas fa-play"></i> Start Game
+        <i class="fas fa-play"></i> Create Game
     </button>
     </div>
     </form>
