@@ -46,12 +46,8 @@ async def requestServer():
         elif gameSession is not None:
             result = await player.connectToGame(result.gameServerAddress, gameSession)
             if(isinstance(result,dict) and result['result']):
-                if(result['result'].isSuccess): 
-                    game = Game.pbToObject(result['game'])
-                    if result['result'].message.split()[-1] == 'full':
-                        return jsonify({'isSuccess': False, 'message': f'Game {game.id} is full'})
-                    else:
-                        return jsonify({'isSuccess': result['result'].isSuccess, 'message': result['result'].message})
+                if(result['result'].isSuccess): game = Game.pbToObject(result['game'])
+                return jsonify({'isSuccess': result['result'].isSuccess, 'message': result['result'].message})
             if(isinstance(result,Result)):
                 return jsonify({'isSuccess': result.isSuccess, 'message': result.message})
     else :

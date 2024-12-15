@@ -257,14 +257,23 @@ class GameServer(Server):
                     ip = IPDecoder.getIP(context)[0]
                     if ip not in list(self.clients.keys()):
                         self.clients[ip]= player
-                    session.addPlayer(self.clients[ip])
-                    return ResultPB.Response(
-                        result = ResultPB.create(
-                            isSuccess=True,
-                            message=f"Connected to {request.game} successfully",
-                    ),
-                        game = Game.objectToPb(session)
-            )
+                    
+                    if session.getAvalableSlots() > 0:
+                        session.addPlayer(self.clients[ip])
+                        return ResultPB.Response(
+                            result = ResultPB.create(
+                                isSuccess=True,
+                                message=f"Connected to {request.game} successfully",
+                        ),
+                            game = Game.objectToPb(session)
+                )
+                    else:
+                        return ResultPB.Response(
+                            result = ResultPB.create(
+                                isSuccess=False,
+                                message=f"Game {request.game} is full",
+                        )                
+                            )
           
             return ResultPB.Response(
                 result = ResultPB.create(
