@@ -151,7 +151,6 @@ class Player:
         
     async def connectToGame(self,name, gameServer, gameSession):
         self.changeName(name)
-        print(str(self))
         if gameServer:
             self.gameServer = gameServer
             self.gameSession = gameSession

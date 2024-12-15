@@ -137,6 +137,11 @@ class GameServer(Server):
         try:
             ip = IPDecoder.getIP(context)[0]
             if ip in list(self.clients.keys()):
+                player = self.clients[ip]
+                for session in self.resource.sessions:
+                    if player in session.players:
+                        session.removePlayer(player)
+                        
                 del self.clients[ip] 
                 message = f"Player {player.name} disconnected successfully"
             else:
@@ -266,7 +271,7 @@ class GameServer(Server):
             for session in self.resource.sessions:
                 if session.id == request.game:
                     ip = IPDecoder.getIP(context)[0]
-                    session.removePlayer(self.clients[ip])
+                    session.removePlayer(player)
                     self.clients[ip]= player
                     if session.getAvalableSlots() > 0:
                         session.addPlayer(self.clients[ip])
@@ -301,6 +306,7 @@ class GameServer(Server):
                 )
             )
         except Exception as e:
+            print(f"Error connecting to game: {e}")
             return ResultPB.Response(
                 result = ResultPB.create(
                 isSuccess=False,
