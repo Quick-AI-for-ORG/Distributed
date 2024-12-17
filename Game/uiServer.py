@@ -149,7 +149,6 @@ async def update():
             'score': player.score,
             'health': player.health
             })
-   
 
   
 
@@ -166,7 +165,6 @@ async def newRound():
         game = Game.pbToObject(result['game']) 
         word = game.getWord()
         role = game.getRole(player)
-        print(role)
         if role == 'Clue Giver':
             return jsonify({
                     'isSuccess': result['result'].isSuccess, 

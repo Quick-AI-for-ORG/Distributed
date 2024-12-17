@@ -208,13 +208,17 @@ class GameServer(Server):
                             player = Player.objectToPb(session.getPlayer(player))
                         )
                     else:
-                        session.playersInput = [f"{game.getWinner().name} Won with {game.getWinner().score}"]
+                        session.playersInput = [f"{session.getWinner().name} won with {session.getWinner().score}"]
+                        for temp in self.resource.sessions:
+                            if temp.id == request.game:
+                                self.resource.removeSession(temp)
                         return ResultPB.Response(
                             result = ResultPB.create(
-                                isSuccess=False,
+                                isSuccess=True,
                                 message=f"End of Game",
                             ),
-                            game = Game.objectToPb(session)
+                            game = Game.objectToPb(session),
+                            player = Player.objectToPb(session.getPlayer(player))
                         )
             return ResultPB.Response(
                 result = ResultPB.create(
@@ -236,6 +240,9 @@ class GameServer(Server):
                 if session.id == request.game:
                     player = self.clients[IPDecoder.getIP(context)[0]]
                     if session.round != 0:
+                        if len(session.playersInput) > 1:
+                            if session.playersInput[0].split()[-1] == session.getPreviousWord(): 
+                                session.playersInput.remove(session.playersInput[0])
                         return ResultPB.Response(
                             result = ResultPB.create(
                                 isSuccess= await self.checkRound(session),
@@ -245,13 +252,17 @@ class GameServer(Server):
                             player = Player.objectToPb(session.getPlayer(player))
                         )
                     else:
-                        session.playersInput = [f"{game.getWinner().name} Won with {game.getWinner().score}"]
+                        session.playersInput = [f"{session.getWinner().name} Won with {session.getWinner().score}"]
+                        for temp in self.resource.sessions:
+                            if temp.id == request.game:
+                                self.resource.removeSession(temp)
                         return ResultPB.Response(
                             result = ResultPB.create(
-                                isSuccess=False,
+                                isSuccess=True,
                                 message=f"End of Game",
                             ),
-                            game = Game.objectToPb(session)
+                            game = Game.objectToPb(session),
+                            player = Player.objectToPb(session.getPlayer(player))
                         )
             return ResultPB.Response(
                 result = ResultPB.create(
@@ -415,7 +426,13 @@ class GameServer(Server):
 
     async def checkInput(self, game, player, input):
         if game.getRole(player) == 'Clue Giver':
-            if game.validateClue(input):
+            if input == 'SKIP PLEASE' :
+                word = game.getWord()
+                game.nextRound()
+                game.playersInput.append(
+                f"{player.name} asked to skip. Skipping this round. Correct guess was {word}"
+            )             
+            elif game.validateClue(input):
                 player.updateScore(5)
                 game.addInput(f"{player.name} : {input}")
             else:
@@ -448,36 +465,39 @@ class GameServer(Server):
 
 
     async def checkRound(self, game):
-        clueGiver = game.getClueGiver()
+        if game.round != 0:
+            clueGiver = game.getClueGiver()
 
-        if clueGiver.health == 0:
-            word = game.getWord()
-            game.nextRound()
-            game.playersInput.append(
-                f"{clueGiver.name} keeps typing invalid clues. Skipping this round. Correct guess was {word}"
-            )
-            return False
+            if clueGiver.health == 0:
+                word = game.getWord()
+                game.nextRound()
+                game.playersInput.append(
+                    f"{clueGiver.name} keeps typing invalid clues. Skipping this round. Correct guess was {word}"
+                )
+                return False
 
-        tries = 0
-        for player in game.players:
-            if game.getRole(player) == 'Guesser':
-                tries += player.health
-
-        if tries == 0:
+            tries = 0
             for player in game.players:
-                if game.getRole(player) == 'Clue Giver':
-                    player.updateScore(-15)
-                else:
-                    player.updateScore(-10)
-                game.updatePlayer(player)
-            word=game.getWord()
-            game.nextRound()
-            game.playersInput.append(
-                f"Guessers are out of tries, {clueGiver.name} failed. Skipping this round. Correct guess was {word}"
-            )
-            return False
-        else:
-            return True
+                if game.getRole(player) == 'Guesser':
+                    tries += player.health
+
+            if tries == 0:
+                for player in game.players:
+                    if game.getRole(player) == 'Clue Giver':
+                        player.updateScore(-15)
+                    else:
+                        player.updateScore(-10)
+                    game.updatePlayer(player)
+                word=game.getWord()
+                game.nextRound()
+                game.playersInput.append(
+                    f"Guessers are out of tries, {clueGiver.name} failed. Skipping this round. Correct guess was {word}"
+                )
+                return False
+            else:
+                return True
+            
+        return False
 
 
                     

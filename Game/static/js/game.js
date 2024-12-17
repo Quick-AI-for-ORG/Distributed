@@ -10,7 +10,9 @@ const score = document.getElementById('score');
 const health = document.getElementById('health');
 const container = document.querySelector('#shown');
 const quit = document.querySelector('#quit');
-
+const states = document.querySelectorAll('.state')
+const skip = document.querySelector('#skip')
+skip.disabled = true
 // Function to send updates to the server
 const sendUpdate = async (inputValue = null) => {
     const result = await fetchRequest('/sendUpdate', 'POST', { input: inputValue });
@@ -25,17 +27,18 @@ const receiveUpdate = async () => {
 
 // Helper function to make fetch requests
 const fetchRequest = async (url, method, body = null) => {
-    const options = {
-        method: method,
-        headers: {
-            'Content-Type': 'application/json',
-        },
-    };
+        const options = {
+            method: method,
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        };
 
-    if (body) options.body = JSON.stringify(body);
+        if (body) options.body = JSON.stringify(body);
 
-    const response = await fetch(url, options);
-    return await response.json();
+        const response = await fetch(url, options);
+        return await response.json();
+
 };
 
 // Handle server response
@@ -49,15 +52,21 @@ const handleUpdateResponse = (result) => {
     } else {
         console.log(result.message);
         displayMessage(false,result.message);
-        if (result.message.includes("No more tires")) input.disabled = true;
-        if (result.message.includes('End of Game') || result.round === 0) {
-            showGameOver();
+        if (result.message.includes("No more tries")) {
             input.disabled = true;
-            displayMessage(false, `${result.message}. Exitting in 10 seconds`);
-            setTimeout(() => {
-                window.location.href = '/';
-            }, 10000);
+            states[0].style.display = 'none';
+            states[1].style.display = 'block'
         }
+        area.innerHTML = result.input.join('\n');
+    if (result.message.includes('End of Game') || result.round === 0) {
+        showGameOver();
+        input.disabled = true;
+        displayMessage(false, `${result.message}. Exitting in 10 seconds`);
+        setTimeout(() => {
+            window.location.href = '/';
+        }, 10000);
+    }
+
     }
 };
 
@@ -77,7 +86,6 @@ const displayMessage = (bool, text) => {
 const showGameOver = () => {
     const gameOverElement = document.getElementById('game-over');
     gameOverElement.style.display = 'block';
-    container.style.display = 'none';
 };
 
 // Event listeners
@@ -87,6 +95,12 @@ button.addEventListener('click', async (event) => {
     input.value = '';
 });
 
+
+skip.addEventListener('click', async (event) => {
+    event.preventDefault();
+    await sendUpdate("SKIP PLEASE");
+    input.value = '';
+    });
 input.addEventListener('keydown', (event) => {
     if (event.key === 'Enter') {
         button.click();
@@ -109,6 +123,7 @@ const unpackAtStart = (result) => {
     round.innerText = result.round    
     if (result.role === "Clue Giver") {
         role.innerText = `Your word is ${result.word}`;
+        skip.disabled = false
     }
     else {
         role.innerText = `${result.clueGiver} is the Clue Giver`;
@@ -118,7 +133,15 @@ const unpackAtStart = (result) => {
 
 const nextRound = (result) => {
     area.innerHTML = result.input.join('\n');
-    if (round.innerText != result.round) {
+    if (result.message.includes('End of Game') || result.round === 0) {
+        showGameOver();
+        input.disabled = true;
+        displayMessage(false, `${result.message}. Exitting in 10 seconds`);
+        setTimeout(() => {
+            window.location.href = '/';
+        }, 10000);
+    }
+    else if (round.innerText != result.round) {
         displayMessage(true,`End of ${round.innerText}. Next round starting in 3 seconds.`);
         input.disabled = true;
         setTimeout(() => {
@@ -130,15 +153,8 @@ const nextRound = (result) => {
 
 
 quit.addEventListener('click', async (event) => {
-    event.preventDefault();
-    const response = await fetch('/disconnectPlayer', {
-      method: 'GET',
-      headers: {
-          'Content-Type': 'application/json',
-      }
-  })
-      
-  const result = await response.json();
+  event.preventDefault();
+  const result = await fetchRequest('/disconnectPlayer', 'GET');
   
   if (result.isSuccess) {
       console.log('Success : ' + result.message);
@@ -149,3 +165,5 @@ quit.addEventListener('click', async (event) => {
       error.style.display = 'block';
     }
   });
+
+

@@ -77,8 +77,11 @@ class Game:
             return True
         
     def getWinner(self):
-       return max(self.players, key=lambda player: player.score)       
-        
+        maxPlayer = self.players[0]
+        for player in self.players:
+            if  player.score >= maxPlayer.score:
+                maxPlayer = player
+        return maxPlayer    
     def getWord(self):
         return self.words[self.round-1]
     def nextRound(self):
@@ -137,7 +140,9 @@ class Game:
             print(f"Game {self.id} :  does not contain player {player}")
             return False
         
-    
+    def getPreviousWord(self):
+        if self.round < 2: return self.getWord()
+        return self.words[self.round - 2]
     def updatePlayer(self, player):
         if player.key in [player.key for player in self.players]:
             self.players.remove(player)

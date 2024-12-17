@@ -129,7 +129,7 @@ button i {
   display: none;
   position: absolute;
   z-index: 10;
-  top: 61%;
+  top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
   background: linear-gradient(to right, #bc1111, #333, #0b5bb1);
@@ -181,9 +181,6 @@ button i {
   display: inline-block;
 }
 
-.state.yellow {
-  background-color: yellow;
-}
 
 .state.red {
   background-color: red;
@@ -225,4 +222,15 @@ button i {
 
 *::-webkit-scrollbar {
   display: none;
+}
+
+#skip{
+  background-color: #333333d3;
+  
+}
+#skip:not(:disabled):hover{
+  background-color: #313131;
+}
+#skip:disabled{
+  cursor: default;
 }

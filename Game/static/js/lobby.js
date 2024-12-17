@@ -50,6 +50,7 @@ async function fetchGameStatus() {
 }
 
 setInterval(fetchGameStatus, 3000);
+fetchGameStatus()
 
 
 
