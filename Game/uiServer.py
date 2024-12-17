@@ -34,7 +34,7 @@ def main():
 @app.route('/game')
 def game():
     global player, game
-    return render_template('game.html',player=player, players=game.players,game=game, round=f"Round {game.round}")
+    return render_template('game.html',player=player, players=game.players,game=game, round=f"Round {game.round}", role=game.getRole(player))
 
 @app.route('/requestServer', methods=['POST'])
 async def requestServer():
@@ -164,7 +164,7 @@ async def newRound():
     if(isinstance(result,dict) and result['result']):
         game = Game.pbToObject(result['game']) 
         word = game.getWord()
-        role = 'Clue Giver' if game.getClueGiver().key == player.key else 'Guesser'
+        role = game.getRole(player)
         if role == 'Clue Giver':
             return jsonify({
                     'isSuccess': result['result'].isSuccess, 
@@ -190,7 +190,7 @@ async def newRound():
     
 def rejectClue(input):
     global game, player, word
-    if game.getClueGiver().key == player.key:
+    if game.getRole(player) == 'Clue Giver' or game.getClueGiver() == player:
         if not game.validateClue(input):
             return jsonify({
                  'isSuccess': False, 
@@ -202,7 +202,7 @@ def rejectClue(input):
 
 def rejectGuess(input):
     global player, game
-    if game.getClueGiver().key != player.key:
+    if game.getRole(player) != 'Clue Giver' and game.getClueGiver() != player:
         if player.health == 0:
              return jsonify({
                  'isSuccess': False, 
