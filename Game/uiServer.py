@@ -39,7 +39,7 @@ def game():
 @app.route('/requestServer', methods=['POST'])
 async def requestServer():
     global player, gameServer, players, game
-    player = Player(name=request.json.get('playerName'),master='192.168.1.44:7777')
+    player = Player(name=request.json.get('playerName'),master='10.3.8.31:7777')
     try:
         gameSession = int(request.json.get('gameSession')) if request.json.get('gameSession') else None
     except ValueError:
