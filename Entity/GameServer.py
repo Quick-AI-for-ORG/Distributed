@@ -330,8 +330,9 @@ class GameServer(Server):
                 if session.id == request.game:
                     ip = IPDecoder.getIP(context)[0]
                     if session.getAvalableSlots() > 0:
-                        session.removePlayer(player)
                         self.clients[ip]= player
+                        self.clients[ip].assignKey(ip)
+                        session.removePlayer(self.clients[ip])
                         session.addPlayer(self.clients[ip])
                         try:
                             result = await self.registerServer()
