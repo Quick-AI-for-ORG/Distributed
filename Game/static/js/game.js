@@ -66,6 +66,7 @@ const handleUpdateResponse = (result) => {
             window.location.href = '/';
         }, 10000);
     }
+    if (result.message.includes('Error')) window.location.href = '/'
 
     }
 };

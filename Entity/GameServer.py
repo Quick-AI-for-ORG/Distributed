@@ -211,6 +211,8 @@ class GameServer(Server):
                         session.playersInput = [f"{session.getWinner().name} won with {session.getWinner().score}"]
                         for temp in self.resource.sessions:
                             if temp.id == request.game:
+                                for player in temp.players:
+                                    await player.disconnectPlayer()
                                 self.resource.removeSession(temp)
                         return ResultPB.Response(
                             result = ResultPB.create(
@@ -426,7 +428,7 @@ class GameServer(Server):
 
 
     async def checkInput(self, game, player, input):
-        if game.getRole(player) == 'Clue Giver':
+        if game.getClueGiver().key == player.key:
             if input == 'SKIP PLEASE' :
                 word = game.getWord()
                 game.nextRound()
@@ -479,12 +481,12 @@ class GameServer(Server):
 
             tries = 0
             for player in game.players:
-                if game.getRole(player) == 'Guesser':
+                if game.getClueGiver().key != player.key:
                     tries += player.health
 
             if tries == 0:
                 for player in game.players:
-                    if game.getRole(player) == 'Clue Giver':
+                    if game.getClueGiver().key == player.key:
                         player.updateScore(-15)
                     else:
                         player.updateScore(-10)
@@ -492,7 +494,7 @@ class GameServer(Server):
                 word=game.getWord()
                 game.nextRound()
                 game.playersInput.append(
-                    f"Guessers are out of tries, {clueGiver.name} failed. Skipping this round. Correct guess was {word}"
+                    f"Guessers are out of tries, {game.getClueGiver().name} failed. Skipping this round. Correct guess was {word}"
                 )
                 return False
             else:
