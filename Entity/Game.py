@@ -61,7 +61,7 @@ class Game:
         return self.clueGiver
     
     def getRole(self, player):
-        if player.key == self.getClueGiver().key: return 'Clue Giver'
+        if player.name == self.getClueGiver().name: return 'Clue Giver'
         else: return 'Guesser'
     
     def validateGuess(self, guess):
