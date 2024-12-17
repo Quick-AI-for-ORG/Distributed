@@ -51,6 +51,14 @@ const handleUpdateResponse = (result) => {
         nextRound(result);
     } else {
         console.log(result.message);
+        if (result.message.includes('End of Game') || result.round === 0 || result.message.include('Failure')) {
+            showGameOver();
+            input.disabled = true;
+            displayMessage(false, `Game Ended. Exitting in 10 seconds`);
+            setTimeout(() => {
+                window.location.href = '/';
+            }, 10000);
+        }
         displayMessage(false,result.message);
         if (result.message.includes("No more tries")) {
             input.disabled = true;
@@ -58,15 +66,7 @@ const handleUpdateResponse = (result) => {
             states[1].style.display = 'block'
         }
         area.innerHTML = result.input.join('\n');
-    if (result.message.includes('End of Game') || result.round === 0) {
-        showGameOver();
-        input.disabled = true;
-        displayMessage(false, `${result.message}. Exitting in 10 seconds`);
-        setTimeout(() => {
-            window.location.href = '/';
-        }, 10000);
-    }
-    if (result.message.includes('Failure')) window.location.href = '/'
+    
 
     }
 };
