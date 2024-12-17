@@ -11,19 +11,17 @@ from Entity.Game import Game
 from Entity.Player import Player
 
         
-m = Master()
+m = Master(ip='192.168.1.44')
 
-server1 = GameServer()
-game = Game()
-      
-dodo = Player(name="Dodo")
-mony = Player(name="Mony")
-khaloudy = Player(name="Khaloudy")
+server1 = GameServer(ip='192.168.1.44',master='192.168.1.44:7777')
+game = Game(words=['Dodo', 'Misho', 'Adoumy', 'Khaloudy', 'Mony'])
+
+dodo = Player(name="Dodo", key="1")
+mony = Player(name="Mony", key="2")
+khaloudy = Player(name="Khaloudy", key="3")
 game.addPlayer(dodo)
 game.addPlayer(mony)
 game.addPlayer(khaloudy)
-
-print(game)
 server1.resource.sessions.append(game)
 
 

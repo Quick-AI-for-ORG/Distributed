@@ -24,7 +24,7 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x0cPlayer.proto\x12\x0b\x64istributed\"A\n\x06Player\x12\n\n\x02id\x18\x01 \x01(\x05\x12\x0c\n\x04name\x18\x02 \x01(\t\x12\x0e\n\x06health\x18\x03 \x01(\x05\x12\r\n\x05score\x18\x04 \x01(\x05\x62\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x0cPlayer.proto\x12\x0b\x64istributed\"N\n\x06Player\x12\n\n\x02id\x18\x01 \x01(\x05\x12\x0c\n\x04name\x18\x02 \x01(\t\x12\x0e\n\x06health\x18\x03 \x01(\x05\x12\r\n\x05score\x18\x04 \x01(\x05\x12\x0b\n\x03key\x18\x05 \x01(\tb\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
@@ -32,8 +32,9 @@ _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'Player_pb2', _globals)
 if not _descriptor._USE_C_DESCRIPTORS:
   DESCRIPTOR._loaded_options = None
   _globals['_PLAYER']._serialized_start=29
-  _globals['_PLAYER']._serialized_end=94
+  _globals['_PLAYER']._serialized_end=107
 # @@protoc_insertion_point(module_scope)
 
-def create(id, name, health, score):
-    return Player(id=id, name=name, health=health, score=score)
+
+def create(id, name, health, score, key):
+    return Player(id=id, name=name, health=health, score=score, key=key)

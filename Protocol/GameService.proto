@@ -11,6 +11,7 @@ service Server {
     rpc disconnectPlayer (Player) returns (Result);
     rpc checkHealth (Health) returns (Result);
     rpc sendUpdate (Register) returns (Response);
+    rpc recieveUpdate (Register) returns (Response);
     rpc createGame (Register) returns (Response);
     rpc connectToGame (Register) returns (Response);
     rpc startGame (Register) returns (Response);

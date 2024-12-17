@@ -9,6 +9,11 @@ sys.path.append(os.path.dirname("Entity"))
 import Buffer.Game_pb2 as pb2
 from Entity.Player import Player
 
+
+def normalize_string(s):
+    return ' '.join(s.lower().split())
+
+
 class Game:
     count = 0
     
@@ -18,7 +23,7 @@ class Game:
         for player in pb.players:
             players.append(Player.pbToObject(player))
 
-        return Game(pb.id, players=players, round=pb.rounds, settings=pb.settings, playersInput=pb.playersInput, words=pb.words.words, clueGiver=pb.clueGiver)
+        return Game(pb.id, players=players, round=pb.rounds, settings=pb.settings, playersInput=pb.playersInput, words=pb.words.words, clueGiver=Player.pbToObject(pb.clueGiver) if pb.clueGiver else None)
     
     def objectToPb(obj):
         players = []
@@ -33,7 +38,7 @@ class Game:
             settings=settings,
             playersInput=obj.playersInput,
             words=pb2.Word(words=obj.words),
-            clueGiver=obj.clueGiver
+            clueGiver=Player.objectToPb(obj.clueGiver) if obj.clueGiver else None
         )
     
     def __init__(self, id=0, players=None, teams=None, currentWord=None, round=1, settings=None, playersInput=None, words=[], clueGiver=None):
@@ -48,11 +53,45 @@ class Game:
         self.currentWord = currentWord
         self.settings = ('long', ['commands', 'countries', 'games', 'movies', 'songs']) if settings is None else settings
         self.playersInput = [] if playersInput is None else playersInput
-        self.name = "OutBurst"
         self.words = words
         self.clueGiver = clueGiver
        
- 
+    def getClueGiver(self):
+        self.clueGiver = self.players[self.round % len(self.players)]
+        return self.clueGiver
+    
+    def getRole(self, player):
+        if player.name == self.getClueGiver().name: return 'Clue Giver'
+        else: return 'Guesser'
+    
+    def validateGuess(self, guess):
+        if normalize_string(guess) == normalize_string(self.getWord()):
+            return True
+        else:
+            return False
+        
+    def validateClue(self, clue):
+        if normalize_string(clue) == normalize_string(self.getWord()):
+            return False
+        else:
+            return True
+        
+    def getWinner(self):
+       return max(self.players, key=lambda player: player.score)       
+        
+    def getWord(self):
+        return self.words[self.round-1]
+    def nextRound(self):
+        self.clearInput()
+        if self.round == len(self.words):
+            self.round = 0
+        else:
+            self.round += 1
+            self.playersInput = []
+            for i in range(len(self.players)):
+               self.players[i].resetHealth()
+               
+        return self.round
     def getAvalableSlots(self):
         return self.MAX_PLAYERS - len(self.players)
     
@@ -69,7 +108,7 @@ class Game:
         
     def addPlayer(self, player):
         if self.getAvalableSlots() > 0:
-            if player not in self.players:
+            if player.key not in [player.key for player in self.players]:
                 self.players.append(player)
                 return True
             
@@ -81,20 +120,32 @@ class Game:
             print(f"Game {self.id} : is full")
             return False
     
+    def getPlayer(self, temp):
+        for player in self.players:
+            if player.key == temp.key: return player
+        return None
     def removePlayer(self, player):
         if self.getAvalableSlots() == self.MAX_PLAYERS:
              print(f"Game {self.id} : is empty")
              return True
             
-        elif player in self.players:
+        elif player.key in [player.key for player in self.players]:
             self.players.remove(player)
             return True
             
         else:
             print(f"Game {self.id} :  does not contain player {player}")
             return False
+        
     
-    
+    def updatePlayer(self, player):
+        if player.key in [player.key for player in self.players]:
+            self.players.remove(player)
+            self.players.append(player)
+            return True
+        else:
+            print(f"Game {self.id} :  does not contain player {player}")
+            return False
     def __str__(self):
         return f"Game {self.id} : {self.getAvalableSlots()} slots available"
      

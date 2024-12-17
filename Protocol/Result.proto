@@ -26,5 +26,6 @@ message Response {
     Word words = 5;
     Context context = 6;
     string update = 7;
+    Player player = 8;
 }
 

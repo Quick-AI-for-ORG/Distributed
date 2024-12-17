@@ -18,7 +18,6 @@ sys.path.append(os.path.dirname("Algorithm"))
 """Import gRPC files as __RPC"""
 import Service.MasterService_pb2_grpc as masterRPC
 import Service.GameService_pb2_grpc as gameServerRPC
-import Service.ClientService_pb2_grpc as playerRPC
 
 """Import Entity Classes"""
 from Entity.Game import Game
@@ -110,6 +109,7 @@ class GameServer(Server):
                 ip = IPDecoder.getIP(context)[0]
                 if ip not in list(self.clients.keys()):
                     self.clients[ip]= player
+                    self.clients[ip].assignKey(ip)
                     message = f"Player {player.name} registered successfully"
                 else:
                     message = f"Player {player.name} already registered"
@@ -161,7 +161,6 @@ class GameServer(Server):
         
 
 
-
     async def runServicer(self):
         gRPCServer = grpc.aio.server(futures.ThreadPoolExecutor(max_workers=10))
         gameServerRPC.add_ServerServicer_to_server(self, gRPCServer)
@@ -192,20 +191,31 @@ class GameServer(Server):
                 message= f"Error checking server {self.ip} health: {e}"
             )
                 
- 
+    
     async def sendUpdate(self, request, context):
         try:
             for session in self.resource.sessions:
                 if session.id == request.game:
                     player = self.clients[IPDecoder.getIP(context)[0]]
-                    if request.update != "": session.addInput(f"{player.name}: {request.update}")
-                    return ResultPB.Response(
-                        result = ResultPB.create(
-                            isSuccess=True,
-                            message=f"Game {request.game} updated successfully",
-                        ),
-                        game = Game.objectToPb(session)
-                    )
+                    if session.round != 0:
+                        await self.checkInput(session, player, request.update)
+                        return ResultPB.Response(
+                            result = ResultPB.create(
+                                isSuccess=True,
+                                message=f"Game {request.game} updated successfully",
+                            ),
+                            game = Game.objectToPb(session),
+                            player = Player.objectToPb(session.getPlayer(player))
+                        )
+                    else:
+                        session.playersInput = [f"{game.getWinner().name} Won with {game.getWinner().score}"]
+                        return ResultPB.Response(
+                            result = ResultPB.create(
+                                isSuccess=False,
+                                message=f"End of Game",
+                            ),
+                            game = Game.objectToPb(session)
+                        )
             return ResultPB.Response(
                 result = ResultPB.create(
                     isSuccess=False,
@@ -220,6 +230,42 @@ class GameServer(Server):
                 )
             )
             
+    async def recieveUpdate(self, request, context):
+        try:
+            for session in self.resource.sessions:
+                if session.id == request.game:
+                    player = self.clients[IPDecoder.getIP(context)[0]]
+                    if session.round != 0:
+                        return ResultPB.Response(
+                            result = ResultPB.create(
+                                isSuccess= await self.checkRound(session),
+                                message=f"Game {request.game} updated successfully",
+                            ),
+                            game = Game.objectToPb(session),
+                            player = Player.objectToPb(session.getPlayer(player))
+                        )
+                    else:
+                        session.playersInput = [f"{game.getWinner().name} Won with {game.getWinner().score}"]
+                        return ResultPB.Response(
+                            result = ResultPB.create(
+                                isSuccess=False,
+                                message=f"End of Game",
+                            ),
+                            game = Game.objectToPb(session)
+                        )
+            return ResultPB.Response(
+                result = ResultPB.create(
+                    isSuccess=False,
+                    message=f"Game {request.game} not found",
+                )
+            )
+        except Exception as e:
+            return ResultPB.Response(
+                result = ResultPB.create(
+                    isSuccess=False,
+                    message=f"Error updating game {request.game}: {e}"
+                )
+            )
     async def createGame(self, request, context):
        try:
             settings = (request.setting.duration, request.setting.packs)
@@ -233,7 +279,6 @@ class GameServer(Server):
             words = self.pickWords(settings)
             game = Game(settings= settings, words=words) 
             game.addPlayer(player)
-            print(f"Game {game.id} created successfully")
             self.resource.sessions.append(game)
             try:
                 result = await self.registerServer()
@@ -273,9 +318,9 @@ class GameServer(Server):
             for session in self.resource.sessions:
                 if session.id == request.game:
                     ip = IPDecoder.getIP(context)[0]
-                    session.removePlayer(player)
-                    self.clients[ip]= player
                     if session.getAvalableSlots() > 0:
+                        session.removePlayer(player)
+                        self.clients[ip]= player
                         session.addPlayer(self.clients[ip])
                         try:
                             result = await self.registerServer()
@@ -367,3 +412,75 @@ class GameServer(Server):
             self.runServicer()
             )
 
+
+    async def checkInput(self, game, player, input):
+        if game.getRole(player) == 'Clue Giver':
+            if game.validateClue(input):
+                player.updateScore(5)
+                game.addInput(f"{player.name} : {input}")
+            else:
+                player.updateScore(-10)
+                game.playersInput.append(f"{player.name} : ********************************")
+                player.reduceHealth()
+                if player.health == 0:
+                    word = game.getWord()
+                    game.nextRound()
+                    game.playersInput.append(
+                    f"{player.name} keeps typing invalid clues. Skipping this round. Correct guess was {word}"
+            )
+        else:
+            game.addInput(f"{player.name} : {input}")
+            if game.validateGuess(input):
+                if player.health == 3:
+                    player.updateScore(25)
+                elif player.health == 2:
+                    player.updateScore(20)
+                elif player.health == 1:
+                    player.updateScore(15)
+                word = game.getWord()
+                game.nextRound()
+                game.playersInput.append(f"{player.name} guessed it Correctly. Word was {word}")
+            else:
+                player.reduceHealth()
+
+        game.updatePlayer(player)
+
+
+
+    async def checkRound(self, game):
+        clueGiver = game.getClueGiver()
+
+        if clueGiver.health == 0:
+            word = game.getWord()
+            game.nextRound()
+            game.playersInput.append(
+                f"{clueGiver.name} keeps typing invalid clues. Skipping this round. Correct guess was {word}"
+            )
+            return False
+
+        tries = 0
+        for player in game.players:
+            if game.getRole(player) == 'Guesser':
+                tries += player.health
+
+        if tries == 0:
+            for player in game.players:
+                if game.getRole(player) == 'Clue Giver':
+                    player.updateScore(-15)
+                else:
+                    player.updateScore(-10)
+                game.updatePlayer(player)
+            word=game.getWord()
+            game.nextRound()
+            game.playersInput.append(
+                f"Guessers are out of tries, {clueGiver.name} failed. Skipping this round. Correct guess was {word}"
+            )
+            return False
+        else:
+            return True
+
+
+                    
+            
+        
+                

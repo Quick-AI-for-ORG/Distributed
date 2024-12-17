@@ -21,15 +21,12 @@
         </h1>
     </header>
     <div id="container">
-        <h1>
-            <span>Round {{round}}: {{word}}</span>
-                <span id="char"></span>
-                <span class="state-indicator">
-                    <span class="state green"></span>
-                    <span class="state yellow"></span>
-                    <span class="state red"></span>
-                </span>
+        <h1 id='info'>
+            <span id="round">{{round}}</span>
+            <span class="state-indicator">
+                <span class="state green"></span>
             </span>
+            <div id="role"></div>
         </h1>
 
         <div class="content">
@@ -38,9 +35,9 @@
                 <p><i class="fas fa-user" style="color: rgb(0, 52, 125);"></i> <strong>Name:</strong> <span
                         id="player-name">{{player.name}}</span></p>
                 <p><i class="fas fa-star" style="color: rgb(165, 176, 10);"></i> <strong>Points:</strong> <span
-                        id="player-score">{{player.score}}</span></p>
+                        id="score">{{player.score}}</span></p>
                 <p><i class="fas fa-heart" style="color: rgb(250, 67, 67);"></i> <strong>Tries:</strong> <span
-                        id="player-health">{{player.health}}</span></p>
+                        id="health">{{player.health}}</span></p>
             </div>
         </div>
 
@@ -48,18 +45,16 @@
         <div class="input-container">
             <input type="text" placeholder="Type your input here..." id="game-input" />
             <button id='sendButton'><i class="fas fa-paper-plane"></i> Send</button>
-            <button class="quit" onclick="showGameOver()"><i class="fas fa-times"></i> Quit</button>
+            <button class="quit" id='quit'><i class="fas fa-times"></i> Quit</button>
         </div>
         <div id="game-over" style="display: none;">
-            <h1>Game Over</h1>
+            <h1>Game Ended</h1>
         </div>
     </div>
     <div class='error-message' id='error-message'></div>
+    <div class='message' id='message'></div>
     <script>
-        function showGameOver() {
-            const gameOverElement = document.getElementById('game-over');
-            gameOverElement.style.display = 'block';
-        }
+       
     </script>
     <script src="{{ url_for('static', filename='js/game.js') }}"></script>
 

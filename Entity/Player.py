@@ -14,7 +14,6 @@ sys.path.append(os.path.dirname("Algorithm"))
 """Import gRPC files as __RPC"""
 import Service.MasterService_pb2_grpc as masterRPC
 import Service.GameService_pb2_grpc as gameServerRPC
-import Service.ClientService_pb2_grpc as playerRPC
 
 """Import Entity Classes"""
 from Entity.Result import Result
@@ -29,7 +28,7 @@ class Player:
     count = 0
     def pbToObject(pb):
         if not pb: return None
-        return Player(pb.id, pb.name, pb.health, pb.score)
+        return Player(pb.id, pb.name, pb.health, pb.score, pb.key)
     
     def objectToPb(obj):
         return PlayerPB.Player(
@@ -37,10 +36,11 @@ class Player:
             name=obj.name,
             health=obj.health,
             score=obj.score,
+            key=obj.key
         )
         
     
-    def __init__(self, id=0, name="Player", health=3, score=0, master=None, gameServer=None, gameSession=None):
+    def __init__(self, id=0, name="Player", health=3, score=0, master=None, gameServer=None, gameSession=None, key="0"):
         if not id > 0: 
             Player.count += 1
             self.id = Player.count
@@ -52,12 +52,24 @@ class Player:
         self.master = "localhost:7777" if master is None else master
         self.gameServer = None if gameServer is None else gameServer
         self.gameSession = None if gameSession is None else gameSession
+        self.key = key
 
     def __str__(self):
         return f"Player {self.id} : {self.name} has {self.score} score"
     
     def changeName(self,name):
         self.name = name
+      
+    def assignKey(self,key):
+        self.key = key  
+    def reduceHealth(self):
+        self.health -= 1
+        
+    def updateScore(self, points):
+        self.score += points
+        
+    def resetHealth(self):
+        self.health = 3
         
     async def connectPlayer(self, gameServer=None):
         if gameServer:
@@ -223,12 +235,38 @@ class Player:
                     )
                     return {
                             "result": Result.pbToObject(result.result),
-                            "game": result.game
+                            "game": result.game,
+                            "score": result.player.score,
+                            "health": result.player.health
                     }
                 except Exception as e:
                     return Result(
                         isSuccess=False,
-                        message=f"Error sending update to game {self.gameServer}: {e}",
+                        message=f"Error sending update to server {self.gameServer}: {e}",
+                    )
+        else: return Result(
+                        isSuccess=False,
+                        message=f"No Game Server provided or found",
+                    )
+    
+    async def recieveUpdate(self, gameSession):
+        if self.gameServer:
+            async with grpc.aio.insecure_channel(self.gameServer) as channel:
+                self.gameServerStub = gameServerRPC.ServerStub(channel)
+                try:
+                    result = await self.gameServerStub.recieveUpdate(
+                        ResultPB.Register(game=gameSession)
+                    )
+                    return {
+                            "result": Result.pbToObject(result.result),
+                            "game": result.game,
+                            "score": result.player.score,
+                            "health": result.player.health
+                    }
+                except Exception as e:
+                    return Result(
+                        isSuccess=False,
+                        message=f"Error sending update to server {self.gameServer}: {e}",
                     )
         else: return Result(
                         isSuccess=False,

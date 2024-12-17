@@ -2,7 +2,6 @@
 """Client and server classes corresponding to protobuf-defined services."""
 import grpc
 import warnings
-
 import os
 import sys
 sys.path.append(os.path.dirname("Buffer"))
@@ -61,6 +60,11 @@ class ServerStub(object):
                 request_serializer=Result__pb2.Register.SerializeToString,
                 response_deserializer=Result__pb2.Response.FromString,
                 _registered_method=True)
+        self.recieveUpdate = channel.unary_unary(
+                '/distributed.Server/recieveUpdate',
+                request_serializer=Result__pb2.Register.SerializeToString,
+                response_deserializer=Result__pb2.Response.FromString,
+                _registered_method=True)
         self.createGame = channel.unary_unary(
                 '/distributed.Server/createGame',
                 request_serializer=Result__pb2.Register.SerializeToString,
@@ -105,6 +109,12 @@ class ServerServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def recieveUpdate(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
     def createGame(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
@@ -143,6 +153,11 @@ def add_ServerServicer_to_server(servicer, server):
             ),
             'sendUpdate': grpc.unary_unary_rpc_method_handler(
                     servicer.sendUpdate,
+                    request_deserializer=Result__pb2.Register.FromString,
+                    response_serializer=Result__pb2.Response.SerializeToString,
+            ),
+            'recieveUpdate': grpc.unary_unary_rpc_method_handler(
+                    servicer.recieveUpdate,
                     request_deserializer=Result__pb2.Register.FromString,
                     response_serializer=Result__pb2.Response.SerializeToString,
             ),
@@ -268,6 +283,33 @@ class Server(object):
             request,
             target,
             '/distributed.Server/sendUpdate',
+            Result__pb2.Register.SerializeToString,
+            Result__pb2.Response.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def recieveUpdate(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/distributed.Server/recieveUpdate',
             Result__pb2.Register.SerializeToString,
             Result__pb2.Response.FromString,
             options,

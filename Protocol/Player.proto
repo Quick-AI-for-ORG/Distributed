@@ -6,5 +6,6 @@ message Player {
     string name = 2;
     int32 health = 3;
     int32 score = 4;
+    string key = 5;
 }
 

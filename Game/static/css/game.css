@@ -7,7 +7,6 @@ body {
   justify-content: center;
   align-items: center;
   background-color: #f4f4f4;
-
 }
 
 header.game-title {
@@ -44,14 +43,13 @@ header.game-title h1 {
 }
 
 .content {
-  width:100%;
+  width: 100%;
   display: flex;
   justify-content: center;
   align-items: flex-start;
   gap: 20px;
   align-items: center;
-  margin-bottom:3%;
-  
+  margin-bottom: 3%;
 }
 
 textarea {
@@ -82,8 +80,9 @@ textarea[readonly] {
   font-size: 14px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
-.player-info i, .player-info span{
-  margin:1%
+
+.player-info i, .player-info span {
+  margin: 1%;
 }
 
 .player-info p {
@@ -100,7 +99,6 @@ textarea[readonly] {
   font-size: 14px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   margin-bottom: 6%;
-
 }
 
 input[type="text"] {
@@ -130,24 +128,30 @@ button i {
 #game-over {
   display: none;
   position: absolute;
-  top: 50%;
+  z-index: 10;
+  top: 61%;
   left: 50%;
   transform: translate(-50%, -50%);
-  background: #333;
-  padding: 20px;
+  background: linear-gradient(to right, #bc1111, #333, #0b5bb1);
+  padding: 30px;
   border-radius: 10px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
 }
+#container:hover #game-over{
+  top: 50%;
+  left: 50%;
+}
 
 #game-over h1 {
-  color: #bc1111;
-  margin: 0;
+  color: #e6e6e6;
+  margin: 1%;
   font-size: 2.5rem;
   text-align: center;
 }
+
 .quit {
   padding: 10px 20px;
-  background-color: #bc1111;;
+  background-color: #bc1111;
   color: white;
   border: none;
   border-radius: 5px;
@@ -184,35 +188,7 @@ button i {
 .state.red {
   background-color: red;
 }
-.icon-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 20px;
-  margin: 20px 0;
-}
 
-.icon-container i {
-  font-size: 40px;
-  padding: 15px;
-  border-radius: 50%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background-color: #333;
-  color: #f3eaea;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  -webkit-transition: transform 0.3s ease, box-shadow 0.3s ease;
-  -moz-transition: transform 0.3s ease, box-shadow 0.3s ease;
-  -ms-transition: transform 0.3s ease, box-shadow 0.3s ease;
-  -o-transition: transform 0.3s ease, box-shadow 0.3s ease;
-  vertical-align: middle;
-}
-
-.icon-container i:hover {
-  transform: scale(1.2);
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-}
 .error-message {
   background-color: #e6e6e6;
   color: rgb(188, 17, 17);
@@ -221,16 +197,32 @@ button i {
   text-align: center;
   font-weight: bolder;
   width: 80%;
-  max-width: 400px; /* Limit the width */
+  max-width: 400px;
   margin: 20px auto;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); 
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   font-style: italic;
   display: none;
 }
 
-.error-message:hover{
+.message {
+  background-color: #e6e6e6;
+  color: #0b5bb1;
+  padding: 15px;
+  border-radius: 5px;
+  text-align: center;
+  font-weight: bolder;
+  width: 100%;
+  max-width: 400px;
+  margin: 20px auto;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  font-style: italic;
+  display: none;
+}
+
+.error-message:hover {
   transform: scale(1.1);
 }
+
 *::-webkit-scrollbar {
-  display: none; 
+  display: none;
 }
