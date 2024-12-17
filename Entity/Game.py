@@ -47,7 +47,7 @@ class Game:
             self.id = Game.count
         else:
             self.id = id
-        self.MAX_PLAYERS = 3
+        self.MAX_PLAYERS = 4
         self.players = [] if players is None else players
         self.round = round
         self.currentWord = currentWord
@@ -111,13 +111,13 @@ class Game:
         
     def addPlayer(self, player):
         if self.getAvalableSlots() > 0:
-            for temp in self.players:
-                if player.key == temp.key:
-                    print(f"Game {self.id} : already contains player")
-                    return True
-                
-            self.players.append(player)
-            return True  
+            if player.key not in [player.key for player in self.players]:
+                self.players.append(player)
+                return True
+            
+            else:
+                print(f"Game {self.id} : already contains player")
+                return True
             
         else:
             print(f"Game {self.id} : is full")
@@ -132,27 +132,25 @@ class Game:
              print(f"Game {self.id} : is empty")
              return True
             
+        elif player.key in [player.key for player in self.players]:
+            self.players.remove(player)
+            return True
+            
         else:
-            for temp in self.players:
-                if temp.key == player.key:
-                    self.players.remove(temp)
-                    return True
-                else:
-                    print(f"Game {self.id} :  does not contain player {player}")
-                    return False
+            print(f"Game {self.id} :  does not contain player {player}")
+            return False
         
     def getPreviousWord(self):
         if self.round < 2: return self.getWord()
         return self.words[self.round - 2]
     def updatePlayer(self, player):
-        for temp in self.players:
-            if player.key == temp.key:
-                self.players.remove(temp)
-                self.players.append(player)
-                return True
-            else:
-                print(f"Game {self.id} :  does not contain player {player}")
-                return False
+        if player.key in [player.key for player in self.players]:
+            self.players.remove(player)
+            self.players.append(player)
+            return True
+        else:
+            print(f"Game {self.id} :  does not contain player {player}")
+            return False
     def __str__(self):
         return f"Game {self.id} : {self.getAvalableSlots()} slots available"
      
