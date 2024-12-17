@@ -47,7 +47,7 @@ class Game:
             self.id = Game.count
         else:
             self.id = id
-        self.MAX_PLAYERS = 3
+        self.MAX_PLAYERS = 4
         self.players = [] if players is None else players
         self.round = round
         self.currentWord = currentWord
