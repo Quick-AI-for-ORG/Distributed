@@ -58,7 +58,7 @@ const handleUpdateResponse = (result) => {
             states[1].style.display = 'block'
         }
         area.innerHTML = result.input.join('\n');
-    if (result.message.includes('End of Game') || result.round === 0 || result.message.include('Failure')) {
+    if (result.message.includes('End of Game') || result.round === 0 || result.message.includes('Failure') || result.message.includes('not found')) {
         showGameOver();
         input.disabled = true;
         displayMessage(false, `Game Ended. Exitting in 10 seconds`);
